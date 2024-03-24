@@ -1,7 +1,8 @@
 from convertGrammar import grammar
 
 primeros = {}
-siguientes = {}
+follows = {}
+predicts = {}
 
 # Función para calcular el conjunto de primeros
 def getFirsts (symbol):
@@ -41,49 +42,66 @@ def getFirsts (symbol):
     #print(primeros)
     return primeros
 
-def getFollow(symbol):
-   
+def getFollows(symbol):
+    #print("sigue",symbol)
+    follows[symbol] = set()
+    if symbol == "S": 
+        follows[symbol].add('$')
+    for nonTerminal in grammar.keys():
+        ##print(nonTerminal)
+        for rule in grammar[nonTerminal]:
+            #print(nonTerminal, rule)
+            if symbol in rule:
+                index = rule.index(symbol)
+                #print("esta en ",index)
+                if index == len(rule)-1:
+                    #print("es el ultimo")
+                    if not follows.__contains__(nonTerminal):
+                        getFollows(nonTerminal)
+                    #print("se le agrega",follows[nonTerminal])
+                    follows[symbol] = follows[symbol].union(follows[nonTerminal])
+                elif rule[index+1] in grammar.keys():
+                    #print("el que le sigue es", rule[index+1])  
+                    if not primeros.__contains__(rule[index+1]):
+                        getFirsts(rule[index+1])
+                    while index < len(rule)-1 and rule[index+1] in grammar.keys():
+                        #print("index en while ",index)
+                        if not primeros.__contains__(rule[index+1]):
+                            getFirsts(rule[index+1])
+                        #print("se le agrega",primeros[rule[index+1]])
+                        follows[symbol] = follows[symbol].union(primeros[rule[index+1]])
+                        if 'e' in primeros[rule[index+1]]:
+                            index += 1
+                        else:
+                            break
+                    if index == len(rule)-1:
+                        #print("se le agrega el no terminal",nonTerminal)
+                        if not follows.__contains__(nonTerminal):
+                            getFollows(nonTerminal)
+                        follows[symbol] = follows[symbol].union(follows[nonTerminal])    
+                else:
+                    follows[symbol].add(rule[index+1])
+                        
+        if 'e' in follows[symbol]:
+            follows[symbol].remove('e')
+        #print(follows)
 
-    return 0
+""" def getPredict(symbol):
+    for rule in grammar[symbol]:
+        setPredict = symbol+" -> "+rule
+        predicts[setPredict] = set()
+        if rule[0] in grammar.keys():
+            
+        else:
+            predicts[setPredict].add(rule[0])
+        if 'e' in predict[setPredict]:
+            predict[setPredict].remove('e') """
 
 for no_terminal in reversed(grammar.keys()):
     #print(no_terminal)
     getFirsts(no_terminal)
 for no_terminal in grammar.keys():
-    getFollow(no_terminal)
+    getFollows(no_terminal)
 
-print(primeros)
+print(follows)
 
-
-""" # Función para calcular el conjunto de siguientes
-def calcular_siguientes(grammar):
-    siguientes = {}
-    # Algoritmo para calcular los siguientes
-    # Implementar aquí
-    return siguientes
-
-# Función para calcular el conjunto de predicciones
-def calcular_predicciones(grammar, primeros, siguientes):
-    predicciones = {}
-    # Algoritmo para calcular las predicciones
-    # Implementar aquí
-    return predicciones
-
- """
-
-""" primeros = setFirsts (grammar)
-siguientes = calcular_siguientes(grammar)
-predicciones = calcular_predicciones(grammar, primeros, siguientes)
-
-# Imprimir los resultados
-print("Conjunto de Primeros:")
-for no_terminal, primero in primeros.items():
-    print(no_terminal + ": ", primero)
-
-print("\nConjunto de Siguientes:")
-for no_terminal, siguiente in siguientes.items():
-    print(no_terminal + ": ", siguiente)
-
-print("\nConjunto de Predicciones:")
-for no_terminal, prediccion in predicciones.items():
-    print(no_terminal + ": ", prediccion) """
