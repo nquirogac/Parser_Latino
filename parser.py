@@ -86,22 +86,46 @@ def getFollows(symbol):
             follows[symbol].remove('e')
         #print(follows)
 
-""" def getPredict(symbol):
+def getPredict(symbol):
     for rule in grammar[symbol]:
-        setPredict = symbol+" -> "+rule
+        strRule = ' '.join(rule)
+        setPredict = symbol+" -> "+strRule
+        follow = True
         predicts[setPredict] = set()
         if rule[0] in grammar.keys():
-            
+            for element in rule:
+                if element not in grammar.keys():
+                    predicts[setPredict] = predicts[setPredict].union({element})
+                    follow = False
+                    break
+                elif element in grammar.keys() and not primeros.__contains__(element):
+                    getFirsts(element)
+                predicts[setPredict] = predicts[setPredict].union(primeros[element])
+                if 'e' not in primeros[element]:
+                    follow = False
+                    break
+                elif 'e' in primeros[element]:
+                    predicts[setPredict].remove('e')
+            if follow and 'e' in primeros[rule[-1]]: #si primeros de alfa tiene e, hay que agregar sigue de A
+                predicts[setPredict] = predicts[setPredict].union(follows[symbol])  
+                
         else:
-            predicts[setPredict].add(rule[0])
-        if 'e' in predict[setPredict]:
-            predict[setPredict].remove('e') """
+            if rule[0] == 'e':
+                predicts[setPredict] = predicts[setPredict].union(follows[symbol])
+            else:
+                predicts[setPredict].add(rule[0])
+
+        if 'e' in predicts[setPredict]:
+            predicts[setPredict].remove('e')
 
 for no_terminal in reversed(grammar.keys()):
     #print(no_terminal)
     getFirsts(no_terminal)
 for no_terminal in grammar.keys():
     getFollows(no_terminal)
+for no_terminal in grammar.keys():
+    getPredict(no_terminal)
 
-print(follows)
+
+print(predicts)
 
