@@ -9,7 +9,7 @@ def getFirsts (symbol):
     if primeros.__contains__(symbol):
         return primeros
     #print(symbol)
-    primeros[no_terminal] = set()
+    primeros[symbol] = set()
     for produccion in grammar[symbol]:
             
         if produccion[0] not in grammar.keys():
@@ -118,14 +118,28 @@ def getPredict(symbol):
         if 'e' in predicts[setPredict]:
             predicts[setPredict].remove('e')
 
-for no_terminal in reversed(grammar.keys()):
-    #print(no_terminal)
-    getFirsts(no_terminal)
-for no_terminal in grammar.keys():
-    getFollows(no_terminal)
-for no_terminal in grammar.keys():
-    getPredict(no_terminal)
+def checkLL1():
+    for nonTerminal in grammar.keys():
+        setsNonTerminal = [conjunto for produccion, conjunto in predicts.items() if produccion.startswith(nonTerminal)]
+        #print(nonTerminal,setsNonTerminal)
+        if not setsNonTerminal:
+            return True
+        elementos = set()
+        for conjunto in setsNonTerminal:
+            for elemento in conjunto:
+                if elemento in elementos:
+                    return False
+                elementos.add(elemento)
+    return True
 
+for nonTerminal in reversed(grammar.keys()):
+    #print(nonTerminal)
+    getFirsts(nonTerminal)
+for nonTerminal in grammar.keys():
+    getFollows(nonTerminal)
+for nonTerminal in grammar.keys():
+    getPredict(nonTerminal)
 
-print(predicts)
+print(checkLL1())
+
 
