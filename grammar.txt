@@ -1,2 +1,3 @@
-S -> A 1 | 2
-A -> 3 | 4 S
+S -> Expresion
+Expresion -> escribir opening_par P closing_par
+P -> string | id | num

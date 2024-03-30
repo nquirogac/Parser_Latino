@@ -1,10 +1,13 @@
 grammar={
 	"S": [
-		['A', '1'],
-		['2'],
+		['Expresion'],
 	],
-	"A": [
-		['3'],
-		['4', 'S'],
+	"Expresion": [
+		['escribir', 'opening_par', 'P', 'closing_par'],
+	],
+	"P": [
+		['string'],
+		['id'],
+		['num'],
 	],
 }

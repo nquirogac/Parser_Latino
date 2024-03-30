@@ -134,7 +134,7 @@ def lexer(linesAsText, lines):
                     continue      
                 elif (maximalToken(line, flag, j)):
                     #print("<id,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["ID",line[flag:j+1],str(i+1),str(flag+1)])
+                    tokens.append(["ID","id",str(i+1),str(flag+1)])
                     flag = j+1
                 else:
                     continue
@@ -143,7 +143,7 @@ def lexer(linesAsText, lines):
                     continue 
                 elif(maximalToken(line, flag, j, True)):
                     #print("<tkn_real,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["REAL",line[flag:j+1],str(i+1),str(flag+1)])
+                    tokens.append(["REAL","num",str(i+1),str(flag+1)])
                     flag = j+1
             elif len(re.findall(stringRegex, line[flag:len(line)])) > 0 and re.match((r'"|\''), line[flag]) and not ignore:  #if the token is a string
                 if ignore:
@@ -157,7 +157,7 @@ def lexer(linesAsText, lines):
                         cadena = cadena[1:-1]
                         contador = len(foundStrings[0])-2
                         #print("<tkn_str,"+cadena+","+str(i+1)+","+str(flag+1)+">")
-                        tokens.append(["STRING",cadena,str(i+1),str(flag+1)])
+                        tokens.append(["STRING",'string',str(i+1),str(flag+1)])
                 else:
                     contador = contador - 1
             elif (j+1 <= len(line)) and ((line[j] == " ") or (line[j] == "\t") or (line[j] == "\n")):                           #if the token is a space
@@ -305,34 +305,41 @@ def parser():
     global currentRule
     currentRule = ["S"]
     for token in tokens:
-        print(token)
+        print("current rule",currentRule)
+        print("empezamos con",token)
         if seePredicts(token):
-            expected = currentRule.pop(0)
-            if(not emparejar(token[1],expected)):
-                print("Error sintactico en linea, se esperaba",expected)
+            if(not emparejar(token[1])):
+                print("Error sintactico en linea, se esperaba")
                 break
     print("El analisis sintactico ha finalizado exitosamente.")
 
 def seePredicts(token):
+    global currentRule
+    if len(currentRule) < 1: 
+        return True
     current = currentRule.pop(0)
     posiblePredicts = set()
     if current not in grammar.keys():
+        print("no es un no terminal",current)
         currentRule.insert(0,current)
         return True
     while current in grammar.keys():
-        for rules in grammar[current]:
+        print("current",current)
+        for rule in grammar[current]:
             strRule = ' '.join(rule)
-            setPredict = symbol+" -> "+strRule
+            setPredict = current+" -> "+strRule
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
+            print("posibles",posiblePredicts)
         if token[1] not in posiblePredicts:
             print("Error sintactico en linea, se esperaba",posiblePredicts)
             return False
         else:
-            for rules in grammar[current]:
+            for rule in grammar[current]:
                 strRule = ' '.join(rule)
-                setPredict = symbol+" -> "+strRule
+                setPredict = current+" -> "+strRule
                 if token[1] in predicts[setPredict]:
-                    currentRule += rules
+                    print(token,"esta en preddicciones")
+                    currentRule = rule + currentRule
                     print ("Nueva regla",currentRule)
                     break
                     if currentRule[0] == 'e' and len(currentRule) > 1:
@@ -347,15 +354,23 @@ def seePredicts(token):
     currentRule.insert(0,current)
     return True
 
-def emparejar(token, waitedToken):
-    if len(currentRule) == 0: return False
-    if token == "$" and currentRule[0] == "e":
+def emparejar(token):
+    global currentRule
+    if len(currentRule) < 1 and (token != '$'): 
+        return False
+    if token == "$" and len(currentRule) < 1:
+        print("fin")
         return True
+    waitedToken = currentRule.pop(0)
     if token == waitedToken:
+        print("Emparejado",token)
         return True
     else:
         currentRule.insert(0,waitedToken)
         return False
+
+def printError(token, expected):
+    print("Error sintactico en linea",token[2],", se esperaba",expected)
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
