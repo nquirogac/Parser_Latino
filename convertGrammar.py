@@ -26,4 +26,4 @@ archivo = 'grammar.txt'
 
 # Leer la gramática desde el archivo
 grammar = convertGrammar(archivo)
-print(grammar)
+#print(grammar)
