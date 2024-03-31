@@ -10,6 +10,8 @@ keyWords = "acadena|alogico|anumero|leer|limpiar|caso|cierto|verdadero|defecto|o
 
 operators = {"&&": "and", "\|\|": "or", "\.\.": "concat", "\.": "period", "\,": "comma", ";": "semicolon",":": "colon", "\{": "opening_key", "\}": "closing_key", "\[": "opening_bra", "\]": "closing_bra", "\(": "opening_par", "\)": "closing_par", "(\+\+)": "increment", "\-\-": "decrement", "%=": "mod_assign", "/=": "div_assign", "\*=": "times_assign", "-=": "minus_assign", "\+=": "plus_assign", "\+": "plus", "-": "minus", "\*": "times", "/": "div", "\^": "power", "%": "mod", "<=": "leq", ">=": "geq", "==": "equal", "!=": "neq", "<": "less", ">": "greater", "=": "assign", "!": "not", "~=": "regex"}
 operatorsKeys = "|".join(operators.keys())
+key_list = list(operators.keys())
+val_list = list(operators.values())
 
 idsRegex = "^[a-zA-Z_][a-zA-Z0-9_]*" 
 commentsRegex = "//|#"
@@ -302,19 +304,22 @@ def checkLL1():
     return True
 
 def parser():
-    global currentRule
+    global currentRule, error
+    error = False
     currentRule = ["S"]
     for token in tokens:
+        if error:
+            break
         print("current rule",currentRule)
         print("empezamos con",token)
         if seePredicts(token):
-            if(not emparejar(token[1])):
-                print("Error sintactico en linea, se esperaba")
+            if(not emparejar(token)):
                 break
-    print("El analisis sintactico ha finalizado exitosamente.")
+    if not error:        
+        print("El analisis sintactico ha finalizado exitosamente.")
 
 def seePredicts(token):
-    global currentRule
+    global currentRule, error
     if len(currentRule) < 1: 
         return True
     current = currentRule.pop(0)
@@ -331,7 +336,7 @@ def seePredicts(token):
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
             print("posibles",posiblePredicts)
         if token[1] not in posiblePredicts:
-            print("Error sintactico en linea, se esperaba",posiblePredicts)
+            printError(token, posiblePredicts)
             return False
         else:
             for rule in grammar[current]:
@@ -347,7 +352,7 @@ def seePredicts(token):
                     else:
                         break
         if len(currentRule) == 0:
-            print("Error sintactico en linea, se esperaba",posiblePredicts)
+            printError(token, posiblePredicts)
             return False
         current = currentRule.pop(0)
     
@@ -356,21 +361,43 @@ def seePredicts(token):
 
 def emparejar(token):
     global currentRule
-    if len(currentRule) < 1 and (token != '$'): 
+    tokenLexema = token[1]
+    if len(currentRule) < 1 and (tokenLexema != '$'): 
         return False
-    if token == "$" and len(currentRule) < 1:
+    if tokenLexema == "$" and len(currentRule) < 1:
         print("fin")
         return True
     waitedToken = currentRule.pop(0)
-    if token == waitedToken:
-        print("Emparejado",token)
+    if tokenLexema == waitedToken:
+        print("Emparejado",tokenLexema)
         return True
     else:
+        printError(token, [waitedToken])
         currentRule.insert(0,waitedToken)
         return False
 
 def printError(token, expected):
-    print("Error sintactico en linea",token[2],", se esperaba",expected)
+    global error
+    error = True
+    if token[1] == 'EOF':
+        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: “final de archivo”; se esperaba:'
+    else:
+        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "'+token[1]+'"; se esperaba:'
+    for element in expected:
+        if element in operators.values():
+            position = val_list.index(element)
+            operador = key_list[position].replace("\\","")
+            message += ' "'+ operador +'",'
+        elif element == 'string':
+            message += ' "cadena_de_caracteres",'
+        elif element == 'num':
+            message += ' "valor_real",'
+        elif element == 'EOF':
+            message += ' "fin de archivo",'
+    message = message[:-1]+'.'
+    print(message)
+
+
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
@@ -382,8 +409,6 @@ for nonTerminal in grammar.keys():
 
 #print(checkLL1())
 lexer(linesAsText, lines)
-tokens.append(["FIN","$"])
+tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
 parser()
-
-
 
