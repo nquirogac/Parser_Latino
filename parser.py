@@ -190,7 +190,6 @@ def getFirsts (symbol):
     #print(symbol)
     primeros[symbol] = set()
     for produccion in grammar[symbol]:
-            
         if produccion[0] not in grammar.keys():
             primeros[symbol].add(produccion[0])
         elif produccion[0] == 'e':
@@ -205,7 +204,7 @@ def getFirsts (symbol):
                     break
                 elif not primeros.__contains__(element):
                     #print(11)
-                    getFirsts(grammar, element)
+                    getFirsts(element)
                     primeros[symbol] = primeros[symbol].union(primeros[element])
                     if 'e' not in primeros[element]:
                         break
@@ -299,14 +298,16 @@ def getPredict(symbol):
 
 def checkLL1():
     for nonTerminal in grammar.keys():
-        setsNonTerminal = [conjunto for produccion, conjunto in predicts.items() if produccion.startswith(nonTerminal)]
-        #print(nonTerminal,setsNonTerminal)
+        realNonTerminal = nonTerminal+" -> "
+        setsNonTerminal = [conjunto for produccion, conjunto in predicts.items() if produccion.startswith(realNonTerminal)]
+        print(nonTerminal,setsNonTerminal)
         if not setsNonTerminal:
             return True
         elementos = set()
         for conjunto in setsNonTerminal:
             for elemento in conjunto:
                 if elemento in elementos:
+                    print(elemento,"repetido en no terminal", nonTerminal, setsNonTerminal)
                     return False
                 elementos.add(elemento)
     return True
@@ -321,6 +322,8 @@ def parser():
         print("current rule",currentRule)
         print("empezamos con",token)
         if seePredicts(token):
+            if token[1] == 'EOF':
+                break
             if(not emparejar(token)):
                 break
     if not error:        
@@ -344,7 +347,9 @@ def seePredicts(token):
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
             print("conjunto",setPredict,"=",predicts[setPredict] )
             print("posibles",posiblePredicts)
-        if token[1] not in posiblePredicts:
+        if token[1] not in posiblePredicts :
+            if token[1] == 'EOF' and '$' in posiblePredicts:
+                return True
             printError(token, posiblePredicts)
             return False
         else:
@@ -420,10 +425,12 @@ for nonTerminal in grammar.keys():
     getFollows(nonTerminal)
 for nonTerminal in grammar.keys():
     getPredict(nonTerminal)
+
 print(predicts)
 print(checkLL1())
 lexer(linesAsText, lines)
 if tokens!=[]:
+    tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
     parser()
 else:
     print("El analisis sintactico ha finalizado exitosamente.")

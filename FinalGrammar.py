@@ -1,31 +1,52 @@
 grammar={
 	"S": [
-		['Statement', 'S'],
-		['Statement'],
+		['Statement', 'A'],
+	],
+	"A": [
+		['S'],
+		['e'],
 	],
 	"Statement": [
 		['Asignacion'],
-		['ExpresionImpresion'],
+		['Expresion_Impresion'],
 	],
 	"Asignacion": [
-		['id', 'assign', 'Expresion'],
+		['id', 'D'],
 	],
-	"ExpresionImpresion": [
+	"D": [
+		['Asignacion_Unica'],
+		['Asignacion_Multiple'],
+	],
+	"Asignacion_Unica": [
+		['OperadorAsignar', 'Expresion'],
+	],
+	"Asignacion_Multiple": [
+		['comma', 'Asignacion'],
+	],
+	"Expresion_Impresion": [
 		['escribir', 'opening_par', 'Expresion', 'closing_par'],
 	],
 	"Expresion": [
-		['Valor', 'B'],
+		['Valor', 'B', 'C'],
+	],
+	"C": [
+		['comma', 'Expresion'],
+		['e'],
 	],
 	"B": [
-		['OperadorA', 'Expresion'],
+		['Operador_Arit', 'Expresion'],
 		['e'],
 	],
 	"Valor": [
 		['string'],
 		['id'],
-		['num'],
+		['Num'],
 	],
-	"OperadorA": [
+	"Num": [
+		['num'],
+		['minus', 'num'],
+	],
+	"Operador_Arit": [
 		['and'],
 		['concat'],
 		['div'],
@@ -42,5 +63,13 @@ grammar={
 		['power'],
 		['regex'],
 		['times'],
+	],
+	"OperadorAsignar": [
+		['assign'],
+		['mod_assign'],
+		['div_assign'],
+		['times_assign'],
+		['minus_assign'],
+		['plus_assign'],
 	],
 }
