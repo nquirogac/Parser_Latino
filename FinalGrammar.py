@@ -7,6 +7,10 @@ grammar={
 		['e'],
 	],
 	"Statement": [
+		['Accion'],
+		['Condicion'],
+	],
+	"Accion": [
 		['Asignacion'],
 		['Impresion'],
 	],
@@ -48,11 +52,32 @@ grammar={
 	"E": [
 		['Operador_Arit', 'Valor', 'Valor_imprimir'],
 	],
+	"Condicion": [
+		['si'],
+	],
 	"Valor": [
 		['string'],
-		['id'],
 		['Num'],
 		['Expresion_Parentesis'],
+		['Lista'],
+		['Variable'],
+	],
+	"Lista": [
+		['opening_bra', 'Element_lista', 'closing_bra'],
+	],
+	"Element_lista": [
+		['Valor', 'Element_lista_final'],
+	],
+	"Element_lista_final": [
+		['comma', 'Element_lista'],
+		['e'],
+	],
+	"Variable": [
+		['id', 'F'],
+	],
+	"F": [
+		['opening_bra', 'Num', 'closing_bra'],
+		['e'],
 	],
 	"Num": [
 		['num'],

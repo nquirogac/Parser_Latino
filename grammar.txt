@@ -1,6 +1,7 @@
 S -> Statement A
 A -> S | e
-Statement -> Asignacion | Impresion
+Statement -> Accion | Condicion
+Accion -> Asignacion | Impresion
 
 Asignacion -> id D
 D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod
@@ -16,7 +17,16 @@ C -> comma Valor Expresion_Asignacion
 B -> Operador_Arit Valor Expresion_Asignacion
 E -> Operador_Arit Valor Valor_imprimir
 
-Valor -> string | id | Num | Expresion_Parentesis
+Condicion -> si
+
+Valor -> string | Num | Expresion_Parentesis | Lista | Variable | nulo | Diccionario
+Lista -> opening_bra Element_lista closing_bra
+Element_lista -> Valor Element_lista_final
+Element_lista_final -> comma Element_lista | e
+Variable -> id F
+F -> opening_bra Num closing_bra | e
+Diccionario -> opening_key closing_key
+
 Num -> num | minus num
 Operador_Arit -> and | concat | div | equal | geq | leq | less | greater | minus | mod | neq | or | plus | power | regex | times
 OperadorAsignar -> assign | mod_assign | div_assign | times_assign | minus_assign | plus_assign
