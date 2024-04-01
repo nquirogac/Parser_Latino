@@ -49,10 +49,11 @@ def maximalToken(line, flag, j, num=False):
         return False
 
 def findOperators(line, flag, j, i):
+    global saltar
     for key in operators:
         if(re.fullmatch(key, line[flag:j+1])):
             #print("<tkn_"+operators[key]+","+str(i+1)+","+str(flag+1)+">")
-            tokens.append(["OPERATOR",operators[key],str(i+1),str(flag+1)])
+            tokens.append([str(key.replace("\\","")),operators[key],str(i+1-saltar),str(flag+1)])
               
 def defineOperators(line, flag, j, i):
     if (j+1 == len(line)):
@@ -82,13 +83,17 @@ def defineMultiLineComments(line, flag, j):
     return True
 
 def lexer(linesAsText, lines):
+    global saltar
     ignore = False
     romper = False
+    saltar = 0
     for i in range(len(lines)):
         flag = 0
         line = lines[i]
         contador = 0
+        if ignore: saltar += 1
         if not line.strip():
+            saltar += 1
             continue
         for j in range(0,len(line)):    
             if (re.fullmatch(keyWords, line[flag:j+1])):           #if the token is a keyword
@@ -96,17 +101,20 @@ def lexer(linesAsText, lines):
                     continue 
                 elif (maximalToken(line, flag, j)):
                     #print("<"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["KEYWORD",line[flag:j+1],str(i+1),str(flag+1)])
+                    tokens.append(["KEYWORD",line[flag:j+1],str(i+1-saltar),str(flag+1)])
                     flag = j+1
                 else:
                     continue  
             elif (re.match(commentsRegex, line[flag:j+2])):         #if the token is a comment
-                if ignore:
+                
+                if flag == 0: saltar += 1
+                elif ignore:
                     break 
                 else:
                     break
             elif(re.match(operatorsKeys, line[flag:j+1]) or re.match(operatorsKeys, line[flag:j+2]) or ignore):     #if the token is an operator or special character
                 if (re.match(r'/\*', line[flag:j+2])) and not ignore:
+                    if flag == 0: saltar += 1
                     if(not defineMultiLineComments(line, flag, j)):
                         
                         #print(">>> Error lexico (linea:", str(i+1)+ ", posicion:", str(flag+1)+")")
@@ -136,7 +144,7 @@ def lexer(linesAsText, lines):
                     continue      
                 elif (maximalToken(line, flag, j)):
                     #print("<id,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["ID","id",str(i+1),str(flag+1)])
+                    tokens.append(["ID","id",str(i+1-saltar),str(flag+1)])
                     flag = j+1
                 else:
                     continue
@@ -145,7 +153,7 @@ def lexer(linesAsText, lines):
                     continue 
                 elif(maximalToken(line, flag, j, True)):
                     #print("<tkn_real,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["REAL","num",str(i+1),str(flag+1)])
+                    tokens.append([str(line[flag:j+1]),"num",str(i+1-saltar),str(flag+1)])
                     flag = j+1
             elif len(re.findall(stringRegex, line[flag:len(line)])) > 0 and re.match((r'"|\''), line[flag]) and not ignore:  #if the token is a string
                 if ignore:
@@ -159,7 +167,7 @@ def lexer(linesAsText, lines):
                         cadena = cadena[1:-1]
                         contador = len(foundStrings[0])-2
                         #print("<tkn_str,"+cadena+","+str(i+1)+","+str(flag+1)+">")
-                        tokens.append(["STRING",'string',str(i+1),str(flag+1)])
+                        tokens.append([cadena,"string",str(i+1-saltar),str(flag+1)])
                 else:
                     contador = contador - 1
             elif (j+1 <= len(line)) and ((line[j] == " ") or (line[j] == "\t") or (line[j] == "\n")):                           #if the token is a space
@@ -334,6 +342,7 @@ def seePredicts(token):
             strRule = ' '.join(rule)
             setPredict = current+" -> "+strRule
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
+            print("conjunto",setPredict,"=",predicts[setPredict] )
             print("posibles",posiblePredicts)
         if token[1] not in posiblePredicts:
             printError(token, posiblePredicts)
@@ -342,13 +351,15 @@ def seePredicts(token):
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
                 setPredict = current+" -> "+strRule
+                print(token[1],"?",predicts[setPredict])
                 if token[1] in predicts[setPredict]:
                     print(token,"esta en preddicciones")
                     currentRule = rule + currentRule
                     print ("Nueva regla",currentRule)
-                    break
+                    
                     if currentRule[0] == 'e' and len(currentRule) > 1:
                         currentRule.pop(0)
+                        print ("Nueva regla 2",currentRule)
                     else:
                         break
         if len(currentRule) == 0:
@@ -365,39 +376,42 @@ def emparejar(token):
     if len(currentRule) < 1 and (tokenLexema != '$'): 
         return False
     if tokenLexema == "$" and len(currentRule) < 1:
-        print("fin")
+        #print("fin")
         return True
     waitedToken = currentRule.pop(0)
     if tokenLexema == waitedToken:
         print("Emparejado",tokenLexema)
         return True
     else:
-        printError(token, [waitedToken])
+        printError(token, {waitedToken})
         currentRule.insert(0,waitedToken)
         return False
 
 def printError(token, expected):
     global error
     error = True
+    
+    expected = sorted(expected)
+    
     if token[1] == 'EOF':
         message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: “final de archivo”; se esperaba:'
     else:
-        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "'+token[1]+'"; se esperaba:'
+        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "'+token[0]+'"; se esperaba:'
     for element in expected:
         if element in operators.values():
             position = val_list.index(element)
             operador = key_list[position].replace("\\","")
             message += ' "'+ operador +'",'
-        elif element == 'string':
+        elif element == "string":
             message += ' "cadena_de_caracteres",'
-        elif element == 'num':
+        elif element == "num":
             message += ' "valor_real",'
-        elif element == 'EOF':
+        elif element == "EOF":
             message += ' "fin de archivo",'
+        else:
+            message += ' "'+element+'",'
     message = message[:-1]+'.'
     print(message)
-
-
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
@@ -406,9 +420,11 @@ for nonTerminal in grammar.keys():
     getFollows(nonTerminal)
 for nonTerminal in grammar.keys():
     getPredict(nonTerminal)
-
-#print(checkLL1())
+print(predicts)
+print(checkLL1())
 lexer(linesAsText, lines)
-tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
-parser()
+if tokens!=[]:
+    parser()
+else:
+    print("El analisis sintactico ha finalizado exitosamente.")
 

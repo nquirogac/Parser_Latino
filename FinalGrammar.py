@@ -1,13 +1,46 @@
 grammar={
 	"S": [
-		['Expresion'],
+		['Statement', 'S'],
+		['Statement'],
+	],
+	"Statement": [
+		['Asignacion'],
+		['ExpresionImpresion'],
+	],
+	"Asignacion": [
+		['id', 'assign', 'Expresion'],
+	],
+	"ExpresionImpresion": [
+		['escribir', 'opening_par', 'Expresion', 'closing_par'],
 	],
 	"Expresion": [
-		['escribir', 'opening_par', 'P', 'closing_par'],
+		['Valor', 'B'],
 	],
-	"P": [
+	"B": [
+		['OperadorA', 'Expresion'],
+		['e'],
+	],
+	"Valor": [
 		['string'],
 		['id'],
 		['num'],
+	],
+	"OperadorA": [
+		['and'],
+		['concat'],
+		['div'],
+		['equal'],
+		['geq'],
+		['leq'],
+		['less'],
+		['greater'],
+		['minus'],
+		['mod'],
+		['neq'],
+		['or'],
+		['plus'],
+		['power'],
+		['regex'],
+		['times'],
 	],
 }
