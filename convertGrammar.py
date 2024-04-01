@@ -3,6 +3,8 @@ def convertGrammar(file):
     with open(file, 'r') as file:
         grammar = {}
         for linea in file:
+            if linea.strip() == '':
+                continue
             partes = linea.strip().split(' -> ')
             no_terminal = partes[0].strip()
             sentencias = partes[1].strip().split('|')

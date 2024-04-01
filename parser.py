@@ -8,7 +8,7 @@ predicts = {}
 
 keyWords = "acadena|alogico|anumero|leer|limpiar|caso|cierto|verdadero|defecto|otro|desde|elegir|error|escribir|imprimir|poner|falso|fin|funcion|fun|hasta|imprimirf|mientras|nulo|osi|repetir|retorno|retornar|ret|romper|tipo|rango|si|sino|fun|funcion|para|en|regresar"
 
-operators = {"&&": "and", "\|\|": "or", "\.\.": "concat", "\.": "period", "\,": "comma", ";": "semicolon",":": "colon", "\{": "opening_key", "\}": "closing_key", "\[": "opening_bra", "\]": "closing_bra", "\(": "opening_par", "\)": "closing_par", "(\+\+)": "increment", "\-\-": "decrement", "%=": "mod_assign", "/=": "div_assign", "\*=": "times_assign", "-=": "minus_assign", "\+=": "plus_assign", "\+": "plus", "-": "minus", "\*": "times", "/": "div", "\^": "power", "%": "mod", "<=": "leq", ">=": "geq", "==": "equal", "!=": "neq", "<": "less", ">": "greater", "=": "assign", "!": "not", "~=": "regex"}
+operators = {"&&": "and", "\|\|": "or", "\.\.": "concat", "\.": "period", "\,": "comma", ";": "semicolon",":": "colon", "\{": "opening_key", "\}": "closing_key", "\[": "opening_bra", "\]": "closing_bra", "\(": "opening_par", "\)": "closing_par", "\+\+": "increment", "\-\-": "decrement", "%=": "mod_assign", "/=": "div_assign", "\*=": "times_assign", "-=": "minus_assign", "\+=": "plus_assign", "\+": "plus", "-": "minus", "\*": "times", "/": "div", "\^": "power", "%": "mod", "<=": "leq", ">=": "geq", "==": "equal", "!=": "neq", "<": "less", ">": "greater", "=": "assign", "!": "not", "~=": "regex"}
 operatorsKeys = "|".join(operators.keys())
 key_list = list(operators.keys())
 val_list = list(operators.values())
@@ -395,7 +395,7 @@ def emparejar(token):
 def printError(token, expected):
     global error
     error = True
-    
+    if '$' in expected: expected.remove('$')
     expected = sorted(expected)
     
     if token[1] == 'EOF':
@@ -426,12 +426,12 @@ for nonTerminal in grammar.keys():
 for nonTerminal in grammar.keys():
     getPredict(nonTerminal)
 
-print(predicts)
-print(checkLL1())
+#print(predicts)
 lexer(linesAsText, lines)
 if tokens!=[]:
     tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
     parser()
 else:
     print("El analisis sintactico ha finalizado exitosamente.")
-
+#print(checkLL1())
+#print(follows)

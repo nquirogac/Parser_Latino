@@ -8,7 +8,7 @@ grammar={
 	],
 	"Statement": [
 		['Asignacion'],
-		['Expresion_Impresion'],
+		['Impresion'],
 	],
 	"Asignacion": [
 		['id', 'D'],
@@ -16,31 +16,43 @@ grammar={
 	"D": [
 		['Asignacion_Unica'],
 		['Asignacion_Multiple'],
+		['OperadorMod'],
 	],
 	"Asignacion_Unica": [
-		['OperadorAsignar', 'Expresion'],
+		['OperadorAsignar', 'Valor', 'Expresion_Asignacion'],
 	],
 	"Asignacion_Multiple": [
 		['comma', 'Asignacion'],
 	],
-	"Expresion_Impresion": [
-		['escribir', 'opening_par', 'Expresion', 'closing_par'],
+	"Impresion": [
+		['escribir', 'opening_par', 'Valor', 'Valor_imprimir', 'closing_par'],
 	],
-	"Expresion": [
-		['Valor', 'B', 'C'],
+	"Expresion_Asignacion": [
+		['B'],
+		['C'],
+		['e'],
+	],
+	"Valor_imprimir": [
+		['E'],
+		['e'],
+	],
+	"Expresion_Parentesis": [
+		['opening_par', 'Valor', 'B', 'closing_par'],
 	],
 	"C": [
-		['comma', 'Expresion'],
-		['e'],
+		['comma', 'Valor', 'Expresion_Asignacion'],
 	],
 	"B": [
-		['Operador_Arit', 'Expresion'],
-		['e'],
+		['Operador_Arit', 'Valor', 'Expresion_Asignacion'],
+	],
+	"E": [
+		['Operador_Arit', 'Valor', 'Valor_imprimir'],
 	],
 	"Valor": [
 		['string'],
 		['id'],
 		['Num'],
+		['Expresion_Parentesis'],
 	],
 	"Num": [
 		['num'],
@@ -71,5 +83,9 @@ grammar={
 		['times_assign'],
 		['minus_assign'],
 		['plus_assign'],
+	],
+	"OperadorMod": [
+		['increment'],
+		['decrement'],
 	],
 }
