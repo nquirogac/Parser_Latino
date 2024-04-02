@@ -20,18 +20,29 @@ grammar={
 		['fun', 'Funcion_Sintaxis'],
 	],
 	"Funcion_Sintaxis": [
-		['id', 'opening_par', 'Argumento', 'closing_par', 'Cuerpo_funcion', 'I', 'fin'],
+		['id', 'opening_par', 'Parametro', 'closing_par', 'Cuerpo_funcion', 'fin'],
 	],
-	"Argumento": [
-		['id', 'H'],
+	"Parametro": [
+		['H'],
 		['e'],
 	],
 	"H": [
-		['Argumentos'],
+		['id', 'Parametros'],
+	],
+	"Parametros": [
+		['comma', 'H'],
 		['e'],
 	],
+	"Argumento": [
+		['HH'],
+		['e'],
+	],
+	"HH": [
+		['Valor', 'Argumentos'],
+	],
 	"Argumentos": [
-		['comma', 'Argumento'],
+		['comma', 'HH'],
+		['e'],
 	],
 	"Cuerpo_funcion": [
 		['Cuerpo', 'G'],
@@ -42,14 +53,19 @@ grammar={
 	],
 	"I": [
 		['Funcion_R'],
-		['e'],
 	],
 	"Cuerpo": [
 		['Accion'],
 		['Condicion'],
+		['I'],
 	],
 	"Funcion_R": [
-		['retornar', 'Valor'],
+		['retornar', 'Valor', 'Expresion_Asignacion'],
+		['regresar', 'Valor', 'Expresion_Asignacion'],
+		['ret', 'Valor', 'Expresion_Asignacion'],
+	],
+	"Invocar_Funcion": [
+		['opening_par', 'Argumento', 'closing_par'],
 	],
 	"Asignacion": [
 		['id', 'D'],
@@ -58,9 +74,14 @@ grammar={
 		['Asignacion_Unica'],
 		['Asignacion_Multiple'],
 		['OperadorMod'],
+		['Invocar_Funcion'],
 	],
 	"Asignacion_Unica": [
-		['OperadorAsignar', 'Valor', 'Expresion_Asignacion'],
+		['OperadorAsignar', 'Asignacion_aux'],
+	],
+	"Asignacion_aux": [
+		['Valor', 'Expresion_Asignacion'],
+		['leer', 'opening_par', 'closing_par'],
 	],
 	"Asignacion_Multiple": [
 		['comma', 'Asignacion'],
@@ -117,6 +138,7 @@ grammar={
 	],
 	"F": [
 		['opening_bra', 'Num', 'closing_bra'],
+		['Invocar_Funcion'],
 		['e'],
 	],
 	"Diccionario": [

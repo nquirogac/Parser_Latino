@@ -349,13 +349,14 @@ def seePredicts(token):
             print("conjunto",setPredict,"=",predicts[setPredict] )
             print("posibles",posiblePredicts)
         if token[1] not in posiblePredicts :
+            print("AAA", grammar[current])
             if token[1] == 'EOF' and '$' in posiblePredicts:
                 return True
-            if '$' not in posiblePredicts:
+            if ['e'] not in grammar[current]:
                 printError(token, posiblePredicts)
                 return False
             else:
-                print("se encontro $, seguir")
+                print("se encontro e, seguir")
         else:
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
@@ -445,5 +446,5 @@ if tokens!=[]:
 else:
     print("El analisis sintactico ha finalizado exitosamente.")
 #print(checkLL1())
-#print(predicts)
+#for i in predicts: print(i,predicts[i])
 #print(follows)

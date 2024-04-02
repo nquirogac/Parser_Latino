@@ -4,20 +4,24 @@ Statement -> Accion | Condicion | Funcion
 Accion -> Asignacion | Impresion
 
 Funcion -> funcion Funcion_Sintaxis | fun Funcion_Sintaxis
-Funcion_Sintaxis -> id opening_par Argumento closing_par Cuerpo_funcion I fin
-Argumento -> id H | e
-H -> Argumentos | e
-Argumentos -> comma Argumento
-Cuerpo_funcion -> Cuerpo G
+Funcion_Sintaxis -> id opening_par Parametro closing_par Cuerpo_funcion fin
+Parametro -> H | e
+H -> id Parametros
+Parametros -> comma H | e
+Argumento -> HH | e
+HH -> Valor Argumentos
+Argumentos -> comma HH | e
+Cuerpo_funcion -> Cuerpo G 
 G -> Cuerpo_funcion | e
-I -> Funcion_R | e
-Cuerpo -> Accion | Condicion
-Funcion_R -> retornar Valor
-
+I -> Funcion_R
+Cuerpo -> Accion | Condicion | I
+Funcion_R -> retornar Valor Expresion_Asignacion | regresar Valor Expresion_Asignacion | ret Valor Expresion_Asignacion
+Invocar_Funcion -> opening_par Argumento closing_par
 
 Asignacion -> id D
-D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod
-Asignacion_Unica -> OperadorAsignar Valor Expresion_Asignacion
+D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion 
+Asignacion_Unica -> OperadorAsignar Asignacion_aux
+Asignacion_aux -> Valor Expresion_Asignacion | leer opening_par closing_par
 Asignacion_Multiple -> comma Asignacion
 Impresion -> escribir opening_par Valor Valor_imprimir closing_par
 
@@ -36,7 +40,7 @@ Lista -> opening_bra Element_lista closing_bra
 Element_lista -> Valor Element_lista_final
 Element_lista_final -> comma Element_lista | e
 Variable -> id F
-F -> opening_bra Num closing_bra | e
+F -> opening_bra Num closing_bra | Invocar_Funcion | e
 Diccionario -> opening_key Element_dicc closing_key
 Element_dicc -> Key colon Valor Element_dicc_final
 Element_dicc_final -> comma Element_dicc | e
