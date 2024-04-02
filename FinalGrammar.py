@@ -9,10 +9,35 @@ grammar={
 	"Statement": [
 		['Accion'],
 		['Condicion'],
+		['Funcion'],
 	],
 	"Accion": [
 		['Asignacion'],
 		['Impresion'],
+	],
+	"Funcion": [
+		['funcion', 'id', 'opening_par', 'Argumentos', 'closing_par', 'Cuerpo_funcion', 'fin'],
+	],
+	"Argumento": [
+		['id'],
+		['Argumentos'],
+		['e'],
+	],
+	"Argumentos": [
+		['comma', 'Argumento'],
+	],
+	"Cuerpo_funcion": [
+		['Cuerpo', 'G'],
+	],
+	"G": [
+		['Cuerpo_funcion'],
+	],
+	"Cuerpo": [
+		['Accion'],
+		['Condicion'],
+	],
+	"Funcion_R": [
+		['retornar', 'Valor'],
 	],
 	"Asignacion": [
 		['id', 'D'],
@@ -61,6 +86,9 @@ grammar={
 		['Expresion_Parentesis'],
 		['Lista'],
 		['Variable'],
+		['nulo'],
+		['Diccionario'],
+		['Tipo'],
 	],
 	"Lista": [
 		['opening_bra', 'Element_lista', 'closing_bra'],
@@ -78,6 +106,23 @@ grammar={
 	"F": [
 		['opening_bra', 'Num', 'closing_bra'],
 		['e'],
+	],
+	"Diccionario": [
+		['opening_key', 'Element_dicc', 'closing_key'],
+	],
+	"Element_dicc": [
+		['Key', 'colon', 'Valor', 'Element_dicc_final'],
+	],
+	"Element_dicc_final": [
+		['comma', 'Element_dicc'],
+		['e'],
+	],
+	"Key": [
+		['Num'],
+		['string'],
+	],
+	"Tipo": [
+		['tipo', 'opening_par', 'Valor', 'closing_par'],
 	],
 	"Num": [
 		['num'],

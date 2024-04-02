@@ -101,7 +101,7 @@ def lexer(linesAsText, lines):
                     continue 
                 elif (maximalToken(line, flag, j)):
                     #print("<"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["KEYWORD",line[flag:j+1],str(i+1-saltar),str(flag+1)])
+                    tokens.append([line[flag:j+1],line[flag:j+1],str(i+1-saltar),str(flag+1)])
                     flag = j+1
                 else:
                     continue  
@@ -433,5 +433,5 @@ if tokens!=[]:
     parser()
 else:
     print("El analisis sintactico ha finalizado exitosamente.")
-#print(checkLL1())
+print(checkLL1())
 #print(follows)
