@@ -322,7 +322,8 @@ def parser():
         print("current rule",currentRule)
         print("empezamos con",token)
         if seePredicts(token):
-            if token[1] == 'EOF':
+            print("current rule!!",currentRule)
+            if token[1] == 'EOF' and len(currentRule) <= 1 :
                 break
             if(not emparejar(token)):
                 break
@@ -350,8 +351,11 @@ def seePredicts(token):
         if token[1] not in posiblePredicts :
             if token[1] == 'EOF' and '$' in posiblePredicts:
                 return True
-            printError(token, posiblePredicts)
-            return False
+            if '$' not in posiblePredicts:
+                printError(token, posiblePredicts)
+                return False
+            else:
+                print("se encontro $, seguir")
         else:
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
@@ -371,12 +375,19 @@ def seePredicts(token):
             printError(token, posiblePredicts)
             return False
         current = currentRule.pop(0)
-    
+    if len(currentRule) < 1: 
+        return True
+    if current not in grammar.keys():
+        print("no es un no terminal",current)
+        currentRule.insert(0,current)
+        print("regresamos",currentRule)
+        return True
     currentRule.insert(0,current)
     return True
 
 def emparejar(token):
     global currentRule
+    print("current rule",currentRule)
     tokenLexema = token[1]
     if len(currentRule) < 1 and (tokenLexema != '$'): 
         return False
@@ -433,5 +444,6 @@ if tokens!=[]:
     parser()
 else:
     print("El analisis sintactico ha finalizado exitosamente.")
-print(checkLL1())
+#print(checkLL1())
+#print(predicts)
 #print(follows)

@@ -16,10 +16,17 @@ grammar={
 		['Impresion'],
 	],
 	"Funcion": [
-		['funcion', 'id', 'opening_par', 'Argumentos', 'closing_par', 'Cuerpo_funcion', 'fin'],
+		['funcion', 'Funcion_Sintaxis'],
+		['fun', 'Funcion_Sintaxis'],
+	],
+	"Funcion_Sintaxis": [
+		['id', 'opening_par', 'Argumento', 'closing_par', 'Cuerpo_funcion', 'I', 'fin'],
 	],
 	"Argumento": [
-		['id'],
+		['id', 'H'],
+		['e'],
+	],
+	"H": [
 		['Argumentos'],
 		['e'],
 	],
@@ -31,6 +38,11 @@ grammar={
 	],
 	"G": [
 		['Cuerpo_funcion'],
+		['e'],
+	],
+	"I": [
+		['Funcion_R'],
+		['e'],
 	],
 	"Cuerpo": [
 		['Accion'],
