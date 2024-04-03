@@ -63,6 +63,7 @@ grammar={
 		['retornar', 'Valor', 'Expresion_Asignacion'],
 		['regresar', 'Valor', 'Expresion_Asignacion'],
 		['ret', 'Valor', 'Expresion_Asignacion'],
+		['retorno', 'Valor', 'Expresion_Asignacion'],
 	],
 	"Invocar_Funcion": [
 		['opening_par', 'Argumento', 'closing_par'],
@@ -75,6 +76,10 @@ grammar={
 		['Asignacion_Multiple'],
 		['OperadorMod'],
 		['Invocar_Funcion'],
+		['Asignacion_index'],
+	],
+	"Asignacion_index": [
+		['opening_bra', 'Num', 'closing_bra', 'Asignacion_Unica'],
 	],
 	"Asignacion_Unica": [
 		['OperadorAsignar', 'Asignacion_aux'],
@@ -127,18 +132,32 @@ grammar={
 		['opening_bra', 'Element_lista', 'closing_bra'],
 	],
 	"Element_lista": [
-		['Valor', 'Element_lista_final'],
+		['Valor', 'J'],
+	],
+	"J": [
+		['Element_lista_final'],
+		['e'],
 	],
 	"Element_lista_final": [
-		['comma', 'Element_lista'],
+		['comma', 'Posible_comma'],
+	],
+	"Posible_comma": [
+		['Element_lista'],
 		['e'],
 	],
 	"Variable": [
 		['id', 'F'],
 	],
 	"F": [
-		['opening_bra', 'Num', 'closing_bra'],
+		['Llamar_elemen_lista'],
 		['Invocar_Funcion'],
+		['e'],
+	],
+	"Llamar_elemen_lista": [
+		['opening_bra', 'Num', 'closing_bra', 'FF'],
+	],
+	"FF": [
+		['opening_bra', 'Num', 'closing_bra'],
 		['e'],
 	],
 	"Diccionario": [
