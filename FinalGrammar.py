@@ -154,17 +154,21 @@ grammar={
 		['e'],
 	],
 	"Llamar_elemen_lista": [
-		['opening_bra', 'Num', 'closing_bra', 'FF'],
+		['opening_bra', 'Valor_Asignacion', 'closing_bra', 'FF'],
 	],
 	"FF": [
 		['opening_bra', 'Num', 'closing_bra'],
 		['e'],
 	],
+	"Valor_Asignacion": [
+		['Num'],
+		['string'],
+	],
 	"Diccionario": [
 		['opening_key', 'Element_dicc', 'closing_key'],
 	],
 	"Element_dicc": [
-		['Key', 'colon', 'Valor', 'Element_dicc_final'],
+		['Key', 'colon', 'Valor_dicc', 'Element_dicc_final'],
 	],
 	"Element_dicc_final": [
 		['comma', 'Element_dicc'],
@@ -174,8 +178,19 @@ grammar={
 		['Num'],
 		['string'],
 	],
+	"Valor_dicc": [
+		['Valor'],
+		['Funcion_dicc'],
+	],
 	"Tipo": [
 		['tipo', 'opening_par', 'Valor', 'closing_par'],
+	],
+	"Funcion_dicc": [
+		['funcion', 'Funcion_Sintaxis_dicc'],
+		['fun', 'Funcion_Sintaxis_dicc'],
+	],
+	"Funcion_Sintaxis_dicc": [
+		['opening_par', 'Parametro', 'closing_par', 'Cuerpo_funcion', 'fin'],
 	],
 	"Num": [
 		['num'],
