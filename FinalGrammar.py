@@ -16,9 +16,11 @@ grammar={
 	"Accion": [
 		['Asignacion'],
 		['Impresion'],
+		['Impresion_formato'],
+		['Limpiar'],
 	],
 	"Bloque": [
-		['Accion', 'AAA'],
+		['Accion', 'AA'],
 	],
 	"AA": [
 		['Bloque'],
@@ -37,6 +39,8 @@ grammar={
 	],
 	"H": [
 		['id', 'Parametros'],
+		['sting', 'Parametros'],
+		['Num', 'Parametros'],
 	],
 	"Parametros": [
 		['comma', 'H'],
@@ -107,6 +111,14 @@ grammar={
 	],
 	"Impresion": [
 		['escribir', 'opening_par', 'Valor', 'Valor_imprimir', 'closing_par'],
+		['imprimir', 'opening_par', 'Valor', 'Valor_imprimir', 'closing_par'],
+		['poner', 'opening_par', 'Valor', 'Valor_imprimir', 'closing_par'],
+	],
+	"Impresion_formato": [
+		['imprimirf', 'opening_par', 'string', 'comma', 'H', 'closing_par'],
+	],
+	"Limpiar": [
+		['limpiar', 'opening_par', 'closing_par'],
 	],
 	"Expresion_Asignacion": [
 		['B'],
@@ -118,13 +130,23 @@ grammar={
 		['e'],
 	],
 	"Expresion_Parentesis": [
-		['opening_par', 'Valor', 'B', 'closing_par'],
+		['opening_par', 'Valor', 'Expresion_Parentesis_Aux'],
+	],
+	"Expresion_Parentesis_Aux": [
+		['Multiples_op', 'closing_par'],
 	],
 	"C": [
 		['comma', 'Valor', 'Expresion_Asignacion'],
 	],
 	"B": [
 		['Operador_Arit', 'Valor', 'Expresion_Asignacion'],
+	],
+	"Multiples_op": [
+		['B2'],
+		['e'],
+	],
+	"B2": [
+		['Operador_Arit', 'Valor', 'Multiples_op'],
 	],
 	"E": [
 		['Operador_Arit', 'Valor', 'Valor_imprimir'],
@@ -308,5 +330,6 @@ grammar={
 		['neq'],
 		['less'],
 		['greater'],
+		['regex'],
 	],
 }

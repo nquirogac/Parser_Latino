@@ -22,14 +22,14 @@ def getGramatica():
     gramatica ="""S -> Statement A
     A -> S | e
     Statement -> Accion | Condicional | Funcion | Switch | While
-    Accion -> Asignacion | Impresion
-    Bloque -> Accion AAA
+    Accion -> Asignacion | Impresion | Impresion_formato | Limpiar
+    Bloque -> Accion AA
     AA -> Bloque | e
 
     Funcion -> funcion Funcion_Sintaxis | fun Funcion_Sintaxis
     Funcion_Sintaxis -> id opening_par Parametro closing_par Cuerpo_funcion fin
     Parametro -> H | e
-    H -> id Parametros
+    H -> id Parametros | sting Parametros | Num Parametros
     Parametros -> comma H | e
     Argumento -> HH | e
     HH -> Valor Argumentos
@@ -44,23 +44,28 @@ def getGramatica():
     While -> mientras Condicion S fin
 
     Asignacion -> id D
-    D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index
-    Asignacion_index -> opening_bra Num closing_bra Asignacion_Unica
+    D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index | Metodo
+    Asignacion_index -> opening_bra Operacion_Arit closing_bra Asignacion_Unica
     Asignacion_Unica -> OperadorAsignar Asignacion_aux
     Asignacion_aux -> Valor Expresion_Asignacion | leer opening_par closing_par
     Asignacion_Multiple -> comma Asignacion
-    Impresion -> escribir opening_par Valor Valor_imprimir closing_par
+    Impresion -> escribir opening_par Valor Valor_imprimir closing_par | imprimir opening_par Valor Valor_imprimir closing_par | poner opening_par Valor Valor_imprimir closing_par
+    Impresion_formato -> imprimirf opening_par string comma H closing_par
+    Limpiar -> limpiar opening_par closing_par
 
     Expresion_Asignacion -> B | C | e
     Valor_imprimir -> E | e
-    Expresion_Parentesis -> opening_par Valor B closing_par
+    Expresion_Parentesis -> opening_par Valor Expresion_Parentesis_Aux
+    Expresion_Parentesis_Aux -> Multiples_op closing_par
 
     C -> comma Valor Expresion_Asignacion
     B -> Operador_Arit Valor Expresion_Asignacion
+    Multiples_op -> B2 | e
+    B2 -> Operador_Arit Valor Multiples_op
     E -> Operador_Arit Valor Valor_imprimir
 
     Condicional -> si Condicion Cuerpo_Condicion fin
-    Condicion -> Valor BB | not opening_par Valor BB closing_par
+    Condicion -> Valor BB
     BB -> OperadorLog Condicion | e
     Cuerpo_Condicion -> Cuerpo_Condicion_A GG
     GG -> Cuerpo_Condicion | e
@@ -75,17 +80,20 @@ def getGramatica():
     Valor -> string | Num | Expresion_Parentesis | Lista | Variable | nulo | Diccionario | Tipo | ValorBoo | Convertir_Valor
     Convertir_Valor -> acadena Expresion_Parentesis | alogico Expresion_Parentesis | anumero Expresion_Parentesis
     ValorBoo -> verdadero | falso | cierto | not Expresion_Parentesis
-    Lista -> opening_bra Element_lista closing_bra
-    Element_lista -> Valor J
+    Lista -> opening_bra Posible_comma closing_bra
+    Element_lista -> Operacion_Arit J
     J -> Element_lista_final | e
     Element_lista_final -> comma Posible_comma
     Posible_comma -> Element_lista | e
 
     Variable -> id F
-    F -> Llamar_elemen_lista | Invocar_Funcion | e
+    F -> Llamar_elemen_lista | Invocar_Funcion | Metodo | e
+    Metodo -> period Variable
     Llamar_elemen_lista -> opening_bra Valor_Asignacion closing_bra FF
-    FF -> opening_bra Num closing_bra | e
-    Valor_Asignacion -> Num | string
+    FF -> opening_bra Operacion_Arit closing_bra | e
+    Valor_Asignacion -> Operacion_Arit
+    Operacion_Arit -> Valor Operacion_Arit2
+    Operacion_Arit2 -> Operador_Arit Operacion_Arit | e
 
     Diccionario -> opening_key Element_dicc closing_key
     Element_dicc -> Key colon Valor_dicc Element_dicc_final
@@ -100,7 +108,7 @@ def getGramatica():
     Operador_Arit -> and | concat | div | equal | geq | leq | less | greater | minus | mod | neq | or | plus | power | regex | times
     OperadorAsignar -> assign | mod_assign | div_assign | times_assign | minus_assign | plus_assign
     OperadorMod -> increment | decrement
-    OperadorLog -> and | or | leq | geq | equal | neq | less | greater
+    OperadorLog -> and | or | leq | geq | equal | neq | less | greater | regex
     """
     return gramatica
 
@@ -451,8 +459,8 @@ def parser():
     for token in tokens:
         if error:
             break
-        print("current rule",currentRule)
-        print("empezamos con",token)
+        #print("current rule",currentRule)
+        #print("empezamos con",token)
         if seePredicts(token):
            #print("current rule!!",currentRule)
             if token[1] == 'EOF' and len(currentRule) <= 1 :
@@ -469,19 +477,19 @@ def seePredicts(token):
     current = currentRule.pop(0)
     posiblePredicts = set()
     if current not in grammar.keys():
-        print("no es un no terminal",current)
+        #print("no es un no terminal",current)
         currentRule.insert(0,current)
         return True
     while current in grammar.keys():
-        print("current",current)
+        #print("current",current)
         for rule in grammar[current]:
             strRule = ' '.join(rule)
             setPredict = current+" -> "+strRule
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
-            print("conjunto",setPredict,"=",predicts[setPredict] )
-            print("posibles",posiblePredicts)
+            #print("posibles",posiblePredicts)
+            #print("conjunto",setPredict,"=",predicts[setPredict] )
         if token[1] not in posiblePredicts :
-            print("AAA", grammar[current])
+            #print("AAA", grammar[current])
             if token[1] == 'EOF' and '$' in posiblePredicts:
                 return True
             """ if ['e'] not in grammar[current]: """
@@ -493,15 +501,15 @@ def seePredicts(token):
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
                 setPredict = current+" -> "+strRule
-                print(token[1],"?",predicts[setPredict])
+                #print(token[1],"?",predicts[setPredict])
                 if token[1] in predicts[setPredict]:
-                    print(token,"esta en preddicciones")
+                    #print(token,"esta en preddicciones")
                     currentRule = rule + currentRule
-                    print ("Nueva regla",currentRule)
+                    #print ("Nueva regla",currentRule)
                     
                     if currentRule[0] == 'e' and len(currentRule) > 1:
                         currentRule.pop(0)
-                        print ("Nueva regla 2",currentRule)
+                        #print ("Nueva regla 2",currentRule)
                     else:
                         break
         if len(currentRule) == 0:
@@ -513,7 +521,7 @@ def seePredicts(token):
     if current not in grammar.keys():
        #print("no es un no terminal",current)
         currentRule.insert(0,current)
-        print("regresamos",currentRule)
+        #print("regresamos",currentRule)
         return True
     currentRule.insert(0,current)
     return True
@@ -529,7 +537,7 @@ def emparejar(token):
         return True
     waitedToken = currentRule.pop(0)
     if tokenLexema == waitedToken:
-        print("Emparejado",tokenLexema)
+        #print("Emparejado",tokenLexema)
         return True
     else:
         printError(token, {waitedToken})
@@ -554,7 +562,7 @@ def printError(token, expected):
     expected = sorted(expected)
     
     if token[1] == 'EOF':
-        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: “final de archivo”; se esperaba:'
+        message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "final de archivo"; se esperaba:'
     else:
         message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "'+token[0]+'"; se esperaba:'
     for element in expected:
@@ -565,20 +573,20 @@ def printError(token, expected):
             message += ' "'+ operador +'",'
         
         elif element == "EOF":
-            message += ' "fin de archivo",'
+            message += r' "fin de archivo",'
         else:
             message += ' "'+element+'",'
     message = message[:-1]+'.'
     message = message.replace("\n", "")
     
-    print(message)
+    print(message, end ='')
 
 # Nombre del file que contiene la gramática
-archivo = 'grammar.txt'
+""" archivo = 'grammar.txt'
 # Leer la gramática desde el archivo
-grammar = convertGrammar(archivo)
+grammar = convertGrammar(archivo) """
 
-#grammar = convertGrammarText(getGramatica())
+grammar = convertGrammarText(getGramatica())
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
@@ -596,6 +604,6 @@ if tokens!=[]:
     parser()
 else:
    print("El analisis sintactico ha finalizado exitosamente.")
-print(checkLL1())
+#print(checkLL1())
 #for i in predicts:#print(i,predicts[i])
 #print(follows)
