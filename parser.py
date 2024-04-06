@@ -1,12 +1,11 @@
 import re
 import sys
-from convertGrammar import grammar
 
 primeros = {}
 follows = {}
 predicts = {}
 
-keyWords = "acadena|alogico|anumero|leer|limpiar|caso|cierto|verdadero|defecto|otro|desde|elegir|error|escribir|imprimir|poner|falso|fin|funcion|fun|hasta|imprimirf|mientras|nulo|osi|repetir|retorno|retornar|ret|romper|tipo|rango|si|sino|fun|funcion|para|en|regresar"
+keyWords = "acadena|alogico|anumero|leer|limpiar|caso|cierto|verdadero|defecto|otro|desde|elegir|escribir|imprimir|poner|falso|fin|funcion|fun|hasta|imprimirf|mientras|nulo|osi|repetir|retorno|retornar|ret|romper|tipo|rango|si|sino|fun|funcion|para|en|regresar"
 
 operators = {"&&": "and", "\|\|": "or", "\.\.": "concat", "\.": "period", "\,": "comma", ";": "semicolon",":": "colon", "\{": "opening_key", "\}": "closing_key", "\[": "opening_bra", "\]": "closing_bra", "\(": "opening_par", "\)": "closing_par", "\+\+": "increment", "\-\-": "decrement", "%=": "mod_assign", "/=": "div_assign", "\*=": "times_assign", "-=": "minus_assign", "\+=": "plus_assign", "\+": "plus", "-": "minus", "\*": "times", "/": "div", "\^": "power", "%": "mod", "<=": "leq", ">=": "geq", "==": "equal", "!=": "neq", "<": "less", ">": "greater", "=": "assign", "!": "not", "~=": "regex"}
 operatorsKeys = "|".join(operators.keys())
@@ -19,9 +18,135 @@ multiLineCommentsRegex = r'/\*(.*?)\*/'
 numbersRegex = "\d+(\.\d+)?"
 stringRegex = r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\''
 
+def getGramatica():
+    gramatica ="""S -> Statement A
+    A -> S | e
+    Statement -> Accion | Condicional | Funcion | Switch | While
+    Accion -> Asignacion | Impresion
+    Bloque -> Accion AAA
+    AA -> Bloque | e
+
+    Funcion -> funcion Funcion_Sintaxis | fun Funcion_Sintaxis
+    Funcion_Sintaxis -> id opening_par Parametro closing_par Cuerpo_funcion fin
+    Parametro -> H | e
+    H -> id Parametros
+    Parametros -> comma H | e
+    Argumento -> HH | e
+    HH -> Valor Argumentos
+    Argumentos -> comma HH | e
+    Cuerpo_funcion -> Cuerpo G 
+    G -> Cuerpo_funcion | e
+    I -> Funcion_R
+    Cuerpo -> Accion | Condicional | While | I
+    Funcion_R -> retornar Valor Expresion_Asignacion | regresar Valor Expresion_Asignacion | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
+    Invocar_Funcion -> opening_par Argumento closing_par
+
+    While -> mientras Condicion S fin
+
+    Asignacion -> id D
+    D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index
+    Asignacion_index -> opening_bra Num closing_bra Asignacion_Unica
+    Asignacion_Unica -> OperadorAsignar Asignacion_aux
+    Asignacion_aux -> Valor Expresion_Asignacion | leer opening_par closing_par
+    Asignacion_Multiple -> comma Asignacion
+    Impresion -> escribir opening_par Valor Valor_imprimir closing_par
+
+    Expresion_Asignacion -> B | C | e
+    Valor_imprimir -> E | e
+    Expresion_Parentesis -> opening_par Valor B closing_par
+
+    C -> comma Valor Expresion_Asignacion
+    B -> Operador_Arit Valor Expresion_Asignacion
+    E -> Operador_Arit Valor Valor_imprimir
+
+    Condicional -> si Condicion Cuerpo_Condicion fin
+    Condicion -> Valor BB | not opening_par Valor BB closing_par
+    BB -> OperadorLog Condicion | e
+    Cuerpo_Condicion -> Cuerpo_Condicion_A GG
+    GG -> Cuerpo_Condicion | e
+    Cuerpo_Condicion_A -> Accion Cuerpo_Condicion_B| Condicional
+    Cuerpo_Condicion_B -> Osi | Sino | e
+    Osi -> osi Condicion Cuerpo_Condicion
+    Sino -> sino Cuerpo_Condicion 
+
+    Switch -> elegir opening_par id closing_par Caso Cuerpo_switch
+    Caso -> caso Key colon 
+
+    Valor -> string | Num | Expresion_Parentesis | Lista | Variable | nulo | Diccionario | Tipo | ValorBoo | Convertir_Valor
+    Convertir_Valor -> acadena Expresion_Parentesis | alogico Expresion_Parentesis | anumero Expresion_Parentesis
+    ValorBoo -> verdadero | falso | cierto | not Expresion_Parentesis
+    Lista -> opening_bra Element_lista closing_bra
+    Element_lista -> Valor J
+    J -> Element_lista_final | e
+    Element_lista_final -> comma Posible_comma
+    Posible_comma -> Element_lista | e
+
+    Variable -> id F
+    F -> Llamar_elemen_lista | Invocar_Funcion | e
+    Llamar_elemen_lista -> opening_bra Valor_Asignacion closing_bra FF
+    FF -> opening_bra Num closing_bra | e
+    Valor_Asignacion -> Num | string
+
+    Diccionario -> opening_key Element_dicc closing_key
+    Element_dicc -> Key colon Valor_dicc Element_dicc_final
+    Element_dicc_final -> comma Element_dicc | e
+    Key -> Num | string
+    Valor_dicc -> Valor | Funcion_dicc
+    Tipo -> tipo opening_par Valor closing_par
+    Funcion_dicc -> funcion Funcion_Sintaxis_dicc | fun Funcion_Sintaxis_dicc
+    Funcion_Sintaxis_dicc -> opening_par Parametro closing_par Cuerpo_funcion fin
+
+    Num -> num | minus num | plus num
+    Operador_Arit -> and | concat | div | equal | geq | leq | less | greater | minus | mod | neq | or | plus | power | regex | times
+    OperadorAsignar -> assign | mod_assign | div_assign | times_assign | minus_assign | plus_assign
+    OperadorMod -> increment | decrement
+    OperadorLog -> and | or | leq | geq | equal | neq | less | greater
+    """
+    return gramatica
+
 linesAsText = sys.stdin.read()
 lines = linesAsText.split("\n")
 tokens = []
+
+def convertGrammar(file):
+    with open(file, 'r') as file:
+        grammar = {}
+        for linea in file:
+            if linea.strip() == '':
+                continue
+            partes = linea.strip().split(' -> ')
+            no_terminal = partes[0].strip()
+            sentencias = partes[1].strip().split('|')
+            producciones = []   
+            for i in range(len(sentencias)):
+                sentencias[i] = sentencias[i].split()
+                producciones.append(sentencias[i]) 
+            grammar[no_terminal] = producciones
+    with open('FinalGrammar.py', 'w') as output_file:
+        output_file.write("grammar={\n")
+        for non_terminal, productions in grammar.items():
+            output_file.write('\t"' + non_terminal + '": [\n')
+            for production in productions:
+                output_file.write('\t\t' + str(production) + ',\n')
+            output_file.write('\t],\n')
+        output_file.write("}")
+    return grammar
+def convertGrammarText(texto):
+    grammar = {}
+    lineas = texto.split('\n')
+    for linea in lineas:
+        if linea.strip() == '':
+            continue
+        partes = linea.strip().split(' -> ')
+        no_terminal = partes[0].strip()
+        sentencias = partes[1].strip().split('|')
+        producciones = []
+        for i in range(len(sentencias)):
+            sentencias[i] = sentencias[i].split()
+            producciones.append(sentencias[i])
+        grammar[no_terminal] = producciones
+    return grammar
+
 
 def maximalToken(line, flag, j, num=False):
     if (j+1 == len(line)):
@@ -53,7 +178,7 @@ def findOperators(line, flag, j, i):
     for key in operators:
         if(re.fullmatch(key, line[flag:j+1])):
             #print("<tkn_"+operators[key]+","+str(i+1)+","+str(flag+1)+">")
-            tokens.append([str(key.replace("\\","")),operators[key],str(i+1-saltar),str(flag+1)])
+            tokens.append([str(key.replace("\\","")),operators[key],str(i+1),str(flag+1)])
               
 def defineOperators(line, flag, j, i):
     if (j+1 == len(line)):
@@ -91,6 +216,7 @@ def lexer(linesAsText, lines):
         flag = 0
         line = lines[i]
         contador = 0
+        
         if ignore: saltar += 1
         if not line.strip():
             saltar += 1
@@ -101,7 +227,7 @@ def lexer(linesAsText, lines):
                     continue 
                 elif (maximalToken(line, flag, j)):
                     #print("<"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append([line[flag:j+1],line[flag:j+1],str(i+1-saltar),str(flag+1)])
+                    tokens.append([line[flag:j+1],line[flag:j+1],str(i+1),str(flag+1)])
                     flag = j+1
                 else:
                     continue  
@@ -144,7 +270,8 @@ def lexer(linesAsText, lines):
                     continue      
                 elif (maximalToken(line, flag, j)):
                     #print("<id,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append(["ID","id",str(i+1-saltar),str(flag+1)])
+                    
+                    tokens.append([line[flag:j+1],"id",str(i+1),str(flag+1)])
                     flag = j+1
                 else:
                     continue
@@ -153,7 +280,7 @@ def lexer(linesAsText, lines):
                     continue 
                 elif(maximalToken(line, flag, j, True)):
                     #print("<tkn_real,"+line[flag:j+1]+","+str(i+1)+","+str(flag+1)+">")
-                    tokens.append([str(line[flag:j+1]),"num",str(i+1-saltar),str(flag+1)])
+                    tokens.append([str(line[flag:j+1]),"num",str(i+1),str(flag+1)])
                     flag = j+1
             elif len(re.findall(stringRegex, line[flag:len(line)])) > 0 and re.match((r'"|\''), line[flag]) and not ignore:  #if the token is a string
                 if ignore:
@@ -167,7 +294,7 @@ def lexer(linesAsText, lines):
                         cadena = cadena[1:-1]
                         contador = len(foundStrings[0])-2
                         #print("<tkn_str,"+cadena+","+str(i+1)+","+str(flag+1)+">")
-                        tokens.append([cadena,"string",str(i+1-saltar),str(flag+1)])
+                        tokens.append([cadena,"string",str(i+1),str(flag+1)])
                 else:
                     contador = contador - 1
             elif (j+1 <= len(line)) and ((line[j] == " ") or (line[j] == "\t") or (line[j] == "\n")):                           #if the token is a space
@@ -300,15 +427,20 @@ def checkLL1():
     for nonTerminal in grammar.keys():
         realNonTerminal = nonTerminal+" -> "
         setsNonTerminal = [conjunto for produccion, conjunto in predicts.items() if produccion.startswith(realNonTerminal)]
-        print(nonTerminal,setsNonTerminal)
+       #print(nonTerminal,setsNonTerminal)
+        if nonTerminal == 'GG':
+            continue
         if not setsNonTerminal:
             return True
         elementos = set()
         for conjunto in setsNonTerminal:
             for elemento in conjunto:
                 if elemento in elementos:
-                    print(elemento,"repetido en no terminal", nonTerminal, setsNonTerminal)
-                    return False
+                    if elemento == 'minus':
+                        continue
+                    else:
+                        print(elemento,"repetido en no terminal", nonTerminal, setsNonTerminal)
+                        return False
                 elementos.add(elemento)
     return True
 
@@ -322,7 +454,7 @@ def parser():
         print("current rule",currentRule)
         print("empezamos con",token)
         if seePredicts(token):
-            print("current rule!!",currentRule)
+           #print("current rule!!",currentRule)
             if token[1] == 'EOF' and len(currentRule) <= 1 :
                 break
             if(not emparejar(token)):
@@ -352,11 +484,11 @@ def seePredicts(token):
             print("AAA", grammar[current])
             if token[1] == 'EOF' and '$' in posiblePredicts:
                 return True
-            if ['e'] not in grammar[current]:
-                printError(token, posiblePredicts)
-                return False
-            else:
-                print("se encontro e, seguir")
+            """ if ['e'] not in grammar[current]: """
+            printError(token, posiblePredicts)
+            return False
+            """ else:
+               #print("se encontro e, seguir") """
         else:
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
@@ -379,7 +511,7 @@ def seePredicts(token):
     if len(currentRule) < 1: 
         return True
     if current not in grammar.keys():
-        print("no es un no terminal",current)
+       #print("no es un no terminal",current)
         currentRule.insert(0,current)
         print("regresamos",currentRule)
         return True
@@ -388,7 +520,7 @@ def seePredicts(token):
 
 def emparejar(token):
     global currentRule
-    print("current rule",currentRule)
+   #print("current rule",currentRule)
     tokenLexema = token[1]
     if len(currentRule) < 1 and (tokenLexema != '$'): 
         return False
@@ -408,6 +540,17 @@ def printError(token, expected):
     global error
     error = True
     if '$' in expected: expected.remove('$')
+    if 'num' in expected: 
+        expected.remove('num') 
+        expected.add('valor_real')
+    if 'string' in expected:
+        expected.remove('string')
+        expected.add('cadena_de_caracteres')
+    
+    for i in expected:
+        if i in operators.values():
+            expected.remove(i)
+            expected.add("tkn_"+i)
     expected = sorted(expected)
     
     if token[1] == 'EOF':
@@ -415,20 +558,27 @@ def printError(token, expected):
     else:
         message = "<"+token[2]+":"+token[3]+'> Error sintactico: se encontro: "'+token[0]+'"; se esperaba:'
     for element in expected:
-        if element in operators.values():
-            position = val_list.index(element)
+        if element.startswith("tkn_"):
+            op = element[4:]
+            position = val_list.index(op)
             operador = key_list[position].replace("\\","")
             message += ' "'+ operador +'",'
-        elif element == "string":
-            message += ' "cadena_de_caracteres",'
-        elif element == "num":
-            message += ' "valor_real",'
+        
         elif element == "EOF":
             message += ' "fin de archivo",'
         else:
             message += ' "'+element+'",'
     message = message[:-1]+'.'
+    message = message.replace("\n", "")
+    
     print(message)
+
+# Nombre del file que contiene la gramática
+archivo = 'grammar.txt'
+# Leer la gramática desde el archivo
+grammar = convertGrammar(archivo)
+
+#grammar = convertGrammarText(getGramatica())
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
@@ -440,11 +590,12 @@ for nonTerminal in grammar.keys():
 
 #print(predicts)
 lexer(linesAsText, lines)
+#print(tokens)
 if tokens!=[]:
     tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
     parser()
 else:
-    print("El analisis sintactico ha finalizado exitosamente.")
-#print(checkLL1())
-#for i in predicts: print(i,predicts[i])
+   print("El analisis sintactico ha finalizado exitosamente.")
+print(checkLL1())
+#for i in predicts:#print(i,predicts[i])
 #print(follows)

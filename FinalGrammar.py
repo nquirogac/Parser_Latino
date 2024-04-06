@@ -8,12 +8,21 @@ grammar={
 	],
 	"Statement": [
 		['Accion'],
-		['Condicion'],
+		['Condicional'],
 		['Funcion'],
+		['Switch'],
+		['While'],
 	],
 	"Accion": [
 		['Asignacion'],
 		['Impresion'],
+	],
+	"Bloque": [
+		['Accion', 'AAA'],
+	],
+	"AA": [
+		['Bloque'],
+		['e'],
 	],
 	"Funcion": [
 		['funcion', 'Funcion_Sintaxis'],
@@ -56,7 +65,8 @@ grammar={
 	],
 	"Cuerpo": [
 		['Accion'],
-		['Condicion'],
+		['Condicional'],
+		['While'],
 		['I'],
 	],
 	"Funcion_R": [
@@ -68,6 +78,9 @@ grammar={
 	"Invocar_Funcion": [
 		['opening_par', 'Argumento', 'closing_par'],
 	],
+	"While": [
+		['mientras', 'Condicion', 'S', 'fin'],
+	],
 	"Asignacion": [
 		['id', 'D'],
 	],
@@ -77,9 +90,10 @@ grammar={
 		['OperadorMod'],
 		['Invocar_Funcion'],
 		['Asignacion_index'],
+		['Metodo'],
 	],
 	"Asignacion_index": [
-		['opening_bra', 'Num', 'closing_bra', 'Asignacion_Unica'],
+		['opening_bra', 'Operacion_Arit', 'closing_bra', 'Asignacion_Unica'],
 	],
 	"Asignacion_Unica": [
 		['OperadorAsignar', 'Asignacion_aux'],
@@ -115,8 +129,43 @@ grammar={
 	"E": [
 		['Operador_Arit', 'Valor', 'Valor_imprimir'],
 	],
+	"Condicional": [
+		['si', 'Condicion', 'Cuerpo_Condicion', 'fin'],
+	],
 	"Condicion": [
-		['si'],
+		['Valor', 'BB'],
+	],
+	"BB": [
+		['OperadorLog', 'Condicion'],
+		['e'],
+	],
+	"Cuerpo_Condicion": [
+		['Cuerpo_Condicion_A', 'GG'],
+	],
+	"GG": [
+		['Cuerpo_Condicion'],
+		['e'],
+	],
+	"Cuerpo_Condicion_A": [
+		['Accion', 'Cuerpo_Condicion_B'],
+		['Condicional'],
+	],
+	"Cuerpo_Condicion_B": [
+		['Osi'],
+		['Sino'],
+		['e'],
+	],
+	"Osi": [
+		['osi', 'Condicion', 'Cuerpo_Condicion'],
+	],
+	"Sino": [
+		['sino', 'Cuerpo_Condicion'],
+	],
+	"Switch": [
+		['elegir', 'opening_par', 'id', 'closing_par', 'Caso', 'Cuerpo_switch'],
+	],
+	"Caso": [
+		['caso', 'Key', 'colon'],
 	],
 	"Valor": [
 		['string'],
@@ -127,12 +176,25 @@ grammar={
 		['nulo'],
 		['Diccionario'],
 		['Tipo'],
+		['ValorBoo'],
+		['Convertir_Valor'],
+	],
+	"Convertir_Valor": [
+		['acadena', 'Expresion_Parentesis'],
+		['alogico', 'Expresion_Parentesis'],
+		['anumero', 'Expresion_Parentesis'],
+	],
+	"ValorBoo": [
+		['verdadero'],
+		['falso'],
+		['cierto'],
+		['not', 'Expresion_Parentesis'],
 	],
 	"Lista": [
-		['opening_bra', 'Element_lista', 'closing_bra'],
+		['opening_bra', 'Posible_comma', 'closing_bra'],
 	],
 	"Element_lista": [
-		['Valor', 'J'],
+		['Operacion_Arit', 'J'],
 	],
 	"J": [
 		['Element_lista_final'],
@@ -151,18 +213,28 @@ grammar={
 	"F": [
 		['Llamar_elemen_lista'],
 		['Invocar_Funcion'],
+		['Metodo'],
 		['e'],
+	],
+	"Metodo": [
+		['period', 'Variable'],
 	],
 	"Llamar_elemen_lista": [
 		['opening_bra', 'Valor_Asignacion', 'closing_bra', 'FF'],
 	],
 	"FF": [
-		['opening_bra', 'Num', 'closing_bra'],
+		['opening_bra', 'Operacion_Arit', 'closing_bra'],
 		['e'],
 	],
 	"Valor_Asignacion": [
-		['Num'],
-		['string'],
+		['Operacion_Arit'],
+	],
+	"Operacion_Arit": [
+		['Valor', 'Operacion_Arit2'],
+	],
+	"Operacion_Arit2": [
+		['Operador_Arit', 'Operacion_Arit'],
+		['e'],
 	],
 	"Diccionario": [
 		['opening_key', 'Element_dicc', 'closing_key'],
@@ -195,6 +267,7 @@ grammar={
 	"Num": [
 		['num'],
 		['minus', 'num'],
+		['plus', 'num'],
 	],
 	"Operador_Arit": [
 		['and'],
@@ -225,5 +298,15 @@ grammar={
 	"OperadorMod": [
 		['increment'],
 		['decrement'],
+	],
+	"OperadorLog": [
+		['and'],
+		['or'],
+		['leq'],
+		['geq'],
+		['equal'],
+		['neq'],
+		['less'],
+		['greater'],
 	],
 }
