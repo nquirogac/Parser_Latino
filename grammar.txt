@@ -1,7 +1,7 @@
 S -> Statement A
 A -> S | e
-Statement -> Accion | Condicional | Funcion | Switch | While
-Accion -> Asignacion | Impresion | Impresion_formato | Limpiar
+Statement -> Accion | Funcion 
+Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop
 Bloque -> Accion AA
 AA -> Bloque | e
 
@@ -16,11 +16,23 @@ Argumentos -> comma HH | e
 Cuerpo_funcion -> Cuerpo G 
 G -> Cuerpo_funcion | e
 I -> Funcion_R
-Cuerpo -> Accion | Condicional | While | I
+Cuerpo -> Accion | I
 Funcion_R -> retornar Valor Expresion_Asignacion | regresar Valor Expresion_Asignacion | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
 Invocar_Funcion -> opening_par Argumento closing_par
 
 While -> mientras Condicion S fin
+
+For -> desde opening_par Declaracion_For semicolon Expresion_For semicolon Sentencia_For closing_par Bloque fin
+Declaracion_For -> id assign Num
+Expresion_For -> id Operador_For Valor
+Sentencia_For -> id Senten2 
+Senten2 -> OperadorMod | assign Valor Multiples_op
+
+ForLoop -> para id en Rango Bloque fin
+Rango -> rango opening_par RangoPar closing_par
+RangoPar -> Num T 
+T -> comma RangoPar | e
+
 
 Asignacion -> id D
 D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index | Metodo
@@ -48,13 +60,17 @@ Condicion -> Valor BB
 BB -> OperadorLog Condicion | e
 Cuerpo_Condicion -> Cuerpo_Condicion_A GG
 GG -> Cuerpo_Condicion | e
-Cuerpo_Condicion_A -> Accion Cuerpo_Condicion_B| Condicional
+Cuerpo_Condicion_A -> Accion Cuerpo_Condicion_B
 Cuerpo_Condicion_B -> Osi | Sino | e
 Osi -> osi Condicion Cuerpo_Condicion
 Sino -> sino Cuerpo_Condicion 
 
-Switch -> elegir opening_par id closing_par Caso Cuerpo_switch
-Caso -> caso Key colon 
+Switch -> elegir opening_par id closing_par Caso fin
+Caso -> caso Key colon BloqueS Romper Cuerpo_switch
+BloqueS -> Bloque | e
+Romper -> romper | e 
+Cuerpo_switch -> Caso | Defecto | e
+Defecto -> defecto colon Bloque | otro colon Bloque
 
 Valor -> string | Num | Expresion_Parentesis | Lista | Variable | nulo | Diccionario | Tipo | ValorBoo | Convertir_Valor
 Convertir_Valor -> acadena Expresion_Parentesis | alogico Expresion_Parentesis | anumero Expresion_Parentesis
@@ -88,3 +104,4 @@ Operador_Arit -> and | concat | div | equal | geq | leq | less | greater | minus
 OperadorAsignar -> assign | mod_assign | div_assign | times_assign | minus_assign | plus_assign
 OperadorMod -> increment | decrement
 OperadorLog -> and | or | leq | geq | equal | neq | less | greater | regex
+Operador_For -> less | greater | leq | geq 

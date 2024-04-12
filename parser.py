@@ -217,6 +217,8 @@ def defineMultiLineComments(line, flag, j):
 
 def lexer(linesAsText, lines):
     global saltar
+    global lineas 
+    lineas = 0
     ignore = False
     romper = False
     saltar = 0
@@ -224,7 +226,7 @@ def lexer(linesAsText, lines):
         flag = 0
         line = lines[i]
         contador = 0
-        
+        lineas += 1
         if ignore: saltar += 1
         if not line.strip():
             saltar += 1
@@ -582,11 +584,11 @@ def printError(token, expected):
     print(message, end ='')
 
 # Nombre del file que contiene la gramática
-""" archivo = 'grammar.txt'
+archivo = 'grammar.txt'
 # Leer la gramática desde el archivo
-grammar = convertGrammar(archivo) """
+grammar = convertGrammar(archivo)
 
-grammar = convertGrammarText(getGramatica())
+#grammar = convertGrammarText(getGramatica())
 
 for nonTerminal in reversed(grammar.keys()):
     #print(nonTerminal)
@@ -600,10 +602,10 @@ for nonTerminal in grammar.keys():
 lexer(linesAsText, lines)
 #print(tokens)
 if tokens!=[]:
-    tokens.append(["FIN","EOF",str(int(tokens[-1][2])+1),"1"])
+    tokens.append(["FIN","EOF",str(lineas),"1"])
     parser()
 else:
    print("El analisis sintactico ha finalizado exitosamente.")
-#print(checkLL1())
+print(checkLL1())
 #for i in predicts:#print(i,predicts[i])
 #print(follows)

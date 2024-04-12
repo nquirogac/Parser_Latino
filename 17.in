@@ -1,4 +1,14 @@
-
-x = -3+(5.76*2/x % (10.0)-9
-
-// No se cerraron los paréntesis adecuadamente
+elegir(calificacion)
+  caso 'A':
+    escribir("¡Excelente!.")
+  caso 'B':
+    escribir("¡Bien echo!.")
+  caso 'C':
+    escribir("¡Bien echo!.")
+  caso 'D':
+    escribir("Necesitas mejorar.")
+  caso 'F':
+    escribir("Has reprobado.")
+  otro:
+    escribir("Calificación invalida.")
+fin

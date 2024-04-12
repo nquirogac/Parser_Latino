@@ -8,16 +8,18 @@ grammar={
 	],
 	"Statement": [
 		['Accion'],
-		['Condicional'],
 		['Funcion'],
-		['Switch'],
-		['While'],
 	],
 	"Accion": [
 		['Asignacion'],
 		['Impresion'],
 		['Impresion_formato'],
 		['Limpiar'],
+		['Condicional'],
+		['Switch'],
+		['While'],
+		['For'],
+		['ForLoop'],
 	],
 	"Bloque": [
 		['Accion', 'AA'],
@@ -69,8 +71,6 @@ grammar={
 	],
 	"Cuerpo": [
 		['Accion'],
-		['Condicional'],
-		['While'],
 		['I'],
 	],
 	"Funcion_R": [
@@ -84,6 +84,35 @@ grammar={
 	],
 	"While": [
 		['mientras', 'Condicion', 'S', 'fin'],
+	],
+	"For": [
+		['desde', 'opening_par', 'Declaracion_For', 'semicolon', 'Expresion_For', 'semicolon', 'Sentencia_For', 'closing_par', 'Bloque', 'fin'],
+	],
+	"Declaracion_For": [
+		['id', 'assign', 'Num'],
+	],
+	"Expresion_For": [
+		['id', 'Operador_For', 'Valor'],
+	],
+	"Sentencia_For": [
+		['id', 'Senten2'],
+	],
+	"Senten2": [
+		['OperadorMod'],
+		['assign', 'Valor', 'Multiples_op'],
+	],
+	"ForLoop": [
+		['para', 'id', 'en', 'Rango', 'Bloque', 'fin'],
+	],
+	"Rango": [
+		['rango', 'opening_par', 'RangoPar', 'closing_par'],
+	],
+	"RangoPar": [
+		['Num', 'T'],
+	],
+	"T": [
+		['comma', 'RangoPar'],
+		['e'],
 	],
 	"Asignacion": [
 		['id', 'D'],
@@ -170,7 +199,6 @@ grammar={
 	],
 	"Cuerpo_Condicion_A": [
 		['Accion', 'Cuerpo_Condicion_B'],
-		['Condicional'],
 	],
 	"Cuerpo_Condicion_B": [
 		['Osi'],
@@ -184,10 +212,27 @@ grammar={
 		['sino', 'Cuerpo_Condicion'],
 	],
 	"Switch": [
-		['elegir', 'opening_par', 'id', 'closing_par', 'Caso', 'Cuerpo_switch'],
+		['elegir', 'opening_par', 'id', 'closing_par', 'Caso', 'fin'],
 	],
 	"Caso": [
-		['caso', 'Key', 'colon'],
+		['caso', 'Key', 'colon', 'BloqueS', 'Romper', 'Cuerpo_switch'],
+	],
+	"BloqueS": [
+		['Bloque'],
+		['e'],
+	],
+	"Romper": [
+		['romper'],
+		['e'],
+	],
+	"Cuerpo_switch": [
+		['Caso'],
+		['Defecto'],
+		['e'],
+	],
+	"Defecto": [
+		['defecto', 'colon', 'Bloque'],
+		['otro', 'colon', 'Bloque'],
 	],
 	"Valor": [
 		['string'],
@@ -331,5 +376,11 @@ grammar={
 		['less'],
 		['greater'],
 		['regex'],
+	],
+	"Operador_For": [
+		['less'],
+		['greater'],
+		['leq'],
+		['geq'],
 	],
 }
