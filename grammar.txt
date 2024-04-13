@@ -1,7 +1,7 @@
 S -> Statement A
 A -> S | e
 Statement -> Accion | Funcion 
-Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop
+Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop | DoWhile | Convertir_Valor
 Bloque -> Accion AA
 AA -> Bloque | e
 
@@ -21,8 +21,9 @@ Funcion_R -> retornar Valor Expresion_Asignacion | regresar Valor Expresion_Asig
 Invocar_Funcion -> opening_par Argumento closing_par
 
 While -> mientras Condicion S fin
+DoWhile -> repetir Bloque hasta Condicion
 
-For -> desde opening_par Declaracion_For semicolon Expresion_For semicolon Sentencia_For closing_par Bloque fin
+For -> desde opening_par Declaracion_For semicolon Expresion_For semicolon Sentencia_For closing_par Bloque Romper fin
 Declaracion_For -> id assign Num
 Expresion_For -> id Operador_For Valor
 Sentencia_For -> id Senten2 
@@ -55,7 +56,7 @@ Multiples_op -> B2 | e
 B2 -> Operador_Arit Valor Multiples_op
 E -> Operador_Arit Valor Valor_imprimir
 
-Condicional -> si Condicion Cuerpo_Condicion fin
+Condicional -> si Condicion Cuerpo_Condicion Romper fin
 Condicion -> Valor BB
 BB -> OperadorLog Condicion | e
 Cuerpo_Condicion -> Cuerpo_Condicion_A GG

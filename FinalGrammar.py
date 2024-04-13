@@ -20,6 +20,8 @@ grammar={
 		['While'],
 		['For'],
 		['ForLoop'],
+		['DoWhile'],
+		['Convertir_Valor'],
 	],
 	"Bloque": [
 		['Accion', 'AA'],
@@ -85,8 +87,11 @@ grammar={
 	"While": [
 		['mientras', 'Condicion', 'S', 'fin'],
 	],
+	"DoWhile": [
+		['repetir', 'Bloque', 'hasta', 'Condicion'],
+	],
 	"For": [
-		['desde', 'opening_par', 'Declaracion_For', 'semicolon', 'Expresion_For', 'semicolon', 'Sentencia_For', 'closing_par', 'Bloque', 'fin'],
+		['desde', 'opening_par', 'Declaracion_For', 'semicolon', 'Expresion_For', 'semicolon', 'Sentencia_For', 'closing_par', 'Bloque', 'Romper', 'fin'],
 	],
 	"Declaracion_For": [
 		['id', 'assign', 'Num'],
@@ -181,7 +186,7 @@ grammar={
 		['Operador_Arit', 'Valor', 'Valor_imprimir'],
 	],
 	"Condicional": [
-		['si', 'Condicion', 'Cuerpo_Condicion', 'fin'],
+		['si', 'Condicion', 'Cuerpo_Condicion', 'Romper', 'fin'],
 	],
 	"Condicion": [
 		['Valor', 'BB'],
