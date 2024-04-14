@@ -1,14 +1,9 @@
-elegir(calificacion)
-  caso 'A':
-    escribir("¡Excelente!.")
-  caso 'B':
-    escribir("¡Bien echo!.")
-  caso 'C':
-    escribir("¡Bien echo!.")
-  caso 'D':
-    escribir("Necesitas mejorar.")
-  caso 'F':
-    escribir("Has reprobado.")
-  otro:
-    escribir("Calificación invalida.")
+funcion function(x)
+    
+       retornar {"a":acadena(23*(1/2)),anumero(12*x):acadena(x)
+       .. '"etwas mehr"'
+       }
 fin
+
+
+imprimir(function(45.9^2))

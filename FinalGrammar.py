@@ -21,7 +21,6 @@ grammar={
 		['For'],
 		['ForLoop'],
 		['DoWhile'],
-		['Convertir_Valor'],
 	],
 	"Bloque": [
 		['Accion', 'AA'],
@@ -62,22 +61,15 @@ grammar={
 		['e'],
 	],
 	"Cuerpo_funcion": [
-		['Cuerpo', 'G'],
-	],
-	"G": [
-		['Cuerpo_funcion'],
-		['e'],
+		['S'],
+		['I'],
 	],
 	"I": [
 		['Funcion_R'],
 	],
-	"Cuerpo": [
-		['Accion'],
-		['I'],
-	],
 	"Funcion_R": [
 		['retornar', 'Valor', 'Expresion_Asignacion'],
-		['regresar', 'Valor', 'Expresion_Asignacion'],
+		['Romper'],
 		['ret', 'Valor', 'Expresion_Asignacion'],
 		['retorno', 'Valor', 'Expresion_Asignacion'],
 	],

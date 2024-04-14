@@ -1,7 +1,7 @@
 S -> Statement A
 A -> S | e
 Statement -> Accion | Funcion 
-Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop | DoWhile | Convertir_Valor
+Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop | DoWhile
 Bloque -> Accion AA
 AA -> Bloque | e
 
@@ -13,11 +13,10 @@ Parametros -> comma H | e
 Argumento -> HH | e
 HH -> Valor Argumentos
 Argumentos -> comma HH | e
-Cuerpo_funcion -> Cuerpo G 
-G -> Cuerpo_funcion | e
+Cuerpo_funcion -> S | I
 I -> Funcion_R
-Cuerpo -> Accion | I
-Funcion_R -> retornar Valor Expresion_Asignacion | regresar Valor Expresion_Asignacion | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
+
+Funcion_R -> retornar Valor Expresion_Asignacion | Romper | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
 Invocar_Funcion -> opening_par Argumento closing_par
 
 While -> mientras Condicion S fin
