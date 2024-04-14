@@ -1,6 +1,6 @@
 grammar={
 	"S": [
-		['Statement', 'A'],
+		['Statement', 'A', 'EOF'],
 	],
 	"A": [
 		['S'],
@@ -41,9 +41,7 @@ grammar={
 		['e'],
 	],
 	"H": [
-		['id', 'Parametros'],
-		['sting', 'Parametros'],
-		['Num', 'Parametros'],
+		['Valor', 'Parametros'],
 	],
 	"Parametros": [
 		['comma', 'H'],
@@ -54,22 +52,29 @@ grammar={
 		['e'],
 	],
 	"HH": [
-		['Valor', 'Argumentos'],
+		['Operacion_Arit', 'Argumentos'],
 	],
 	"Argumentos": [
 		['comma', 'HH'],
 		['e'],
 	],
 	"Cuerpo_funcion": [
-		['S'],
-		['I'],
+		['Cuerpo', 'G'],
+	],
+	"G": [
+		['Cuerpo_funcion'],
+		['e'],
 	],
 	"I": [
 		['Funcion_R'],
 	],
+	"Cuerpo": [
+		['S'],
+		['I'],
+	],
 	"Funcion_R": [
 		['retornar', 'Valor', 'Expresion_Asignacion'],
-		['Romper'],
+		['romper'],
 		['ret', 'Valor', 'Expresion_Asignacion'],
 		['retorno', 'Valor', 'Expresion_Asignacion'],
 	],
@@ -313,9 +318,10 @@ grammar={
 	"Key": [
 		['Num'],
 		['string'],
+		['Convertir_Valor'],
 	],
 	"Valor_dicc": [
-		['Valor'],
+		['Operacion_Arit'],
 		['Funcion_dicc'],
 	],
 	"Tipo": [

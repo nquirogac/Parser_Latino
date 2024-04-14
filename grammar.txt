@@ -1,4 +1,4 @@
-S -> Statement A
+S -> Statement A EOF
 A -> S | e
 Statement -> Accion | Funcion 
 Accion -> Asignacion | Impresion | Impresion_formato | Limpiar | Condicional | Switch | While | For | ForLoop | DoWhile
@@ -8,15 +8,17 @@ AA -> Bloque | e
 Funcion -> funcion Funcion_Sintaxis | fun Funcion_Sintaxis
 Funcion_Sintaxis -> id opening_par Parametro closing_par Cuerpo_funcion fin
 Parametro -> H | e
-H -> id Parametros | sting Parametros | Num Parametros
+H -> Valor Parametros
 Parametros -> comma H | e
 Argumento -> HH | e
-HH -> Valor Argumentos
+HH -> Operacion_Arit Argumentos
 Argumentos -> comma HH | e
-Cuerpo_funcion -> S | I
+Cuerpo_funcion -> Cuerpo G 
+G -> Cuerpo_funcion | e
 I -> Funcion_R
+Cuerpo -> S | I
 
-Funcion_R -> retornar Valor Expresion_Asignacion | Romper | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
+Funcion_R -> retornar Valor Expresion_Asignacion | romper | ret Valor Expresion_Asignacion | retorno Valor Expresion_Asignacion
 Invocar_Funcion -> opening_par Argumento closing_par
 
 While -> mientras Condicion S fin
@@ -38,7 +40,7 @@ Asignacion -> id D
 D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index | Metodo
 Asignacion_index -> opening_bra Operacion_Arit closing_bra Asignacion_Unica
 Asignacion_Unica -> OperadorAsignar Asignacion_aux
-Asignacion_aux -> Valor Expresion_Asignacion | leer opening_par closing_par
+Asignacion_aux -> Valor Expresion_Asignacion | leer opening_par closing_par 
 Asignacion_Multiple -> comma Asignacion
 Impresion -> escribir opening_par Valor Valor_imprimir closing_par | imprimir opening_par Valor Valor_imprimir closing_par | poner opening_par Valor Valor_imprimir closing_par
 Impresion_formato -> imprimirf opening_par string comma H closing_par
@@ -93,8 +95,8 @@ Operacion_Arit2 -> Operador_Arit Operacion_Arit | e
 Diccionario -> opening_key Element_dicc closing_key
 Element_dicc -> Key colon Valor_dicc Element_dicc_final
 Element_dicc_final -> comma Element_dicc | e
-Key -> Num | string
-Valor_dicc -> Valor | Funcion_dicc
+Key -> Num | string | Convertir_Valor
+Valor_dicc -> Operacion_Arit | Funcion_dicc
 Tipo -> tipo opening_par Valor closing_par
 Funcion_dicc -> funcion Funcion_Sintaxis_dicc | fun Funcion_Sintaxis_dicc
 Funcion_Sintaxis_dicc -> opening_par Parametro closing_par Cuerpo_funcion fin

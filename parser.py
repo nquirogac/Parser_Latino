@@ -461,8 +461,8 @@ def parser():
     for token in tokens:
         if error:
             break
-        #print("current rule",currentRule)
-        #print("empezamos con",token)
+        print("current rule",currentRule)
+        print("empezamos con",token)
         if seePredicts(token):
            #print("current rule!!",currentRule)
             if token[1] == 'EOF' and len(currentRule) <= 1 :
@@ -479,19 +479,19 @@ def seePredicts(token):
     current = currentRule.pop(0)
     posiblePredicts = set()
     if current not in grammar.keys():
-        #print("no es un no terminal",current)
+        print("no es un no terminal",current)
         currentRule.insert(0,current)
         return True
     while current in grammar.keys():
-        #print("current",current)
+        print("current",current)
         for rule in grammar[current]:
             strRule = ' '.join(rule)
             setPredict = current+" -> "+strRule
             posiblePredicts = posiblePredicts.union(predicts[setPredict])
-            #print("posibles",posiblePredicts)
-            #print("conjunto",setPredict,"=",predicts[setPredict] )
+            print("posibles",posiblePredicts)
+            print("conjunto",setPredict,"=",predicts[setPredict] )
         if token[1] not in posiblePredicts :
-            #print("AAA", grammar[current])
+            print("AAA", grammar[current])
             if token[1] == 'EOF' and '$' in posiblePredicts:
                 return True
             """ if ['e'] not in grammar[current]: """
@@ -503,15 +503,15 @@ def seePredicts(token):
             for rule in grammar[current]:
                 strRule = ' '.join(rule)
                 setPredict = current+" -> "+strRule
-                #print(token[1],"?",predicts[setPredict])
+                print(token[1],"?",predicts[setPredict])
                 if token[1] in predicts[setPredict]:
-                    #print(token,"esta en preddicciones")
+                    print(token,"esta en preddicciones")
                     currentRule = rule + currentRule
-                    #print ("Nueva regla",currentRule)
+                    print ("Nueva regla",currentRule)
                     
                     if currentRule[0] == 'e' and len(currentRule) > 1:
                         currentRule.pop(0)
-                        #print ("Nueva regla 2",currentRule)
+                        print ("Nueva regla 2",currentRule)
                     else:
                         break
         if len(currentRule) == 0:
@@ -521,25 +521,25 @@ def seePredicts(token):
     if len(currentRule) < 1: 
         return True
     if current not in grammar.keys():
-       #print("no es un no terminal",current)
+        print("no es un no terminal",current)
         currentRule.insert(0,current)
-        #print("regresamos",currentRule)
+        print("regresamos",currentRule)
         return True
     currentRule.insert(0,current)
     return True
 
 def emparejar(token):
     global currentRule
-   #print("current rule",currentRule)
+    print("current rule",currentRule)
     tokenLexema = token[1]
     if len(currentRule) < 1 and (tokenLexema != '$'): 
         return False
     if tokenLexema == "$" and len(currentRule) < 1:
-        #print("fin")
+        print("fin")
         return True
     waitedToken = currentRule.pop(0)
     if tokenLexema == waitedToken:
-        #print("Emparejado",tokenLexema)
+        print("Emparejado",tokenLexema)
         return True
     else:
         printError(token, {waitedToken})
@@ -556,7 +556,9 @@ def printError(token, expected):
     if 'string' in expected:
         expected.remove('string')
         expected.add('cadena_de_caracteres')
-    
+    if 'EOF' in expected:
+        expected.remove('EOF')
+        expected.add('final de archivo')
     for i in expected:
         if i in operators.values():
             expected.remove(i)
@@ -574,8 +576,6 @@ def printError(token, expected):
             operador = key_list[position].replace("\\","")
             message += ' "'+ operador +'",'
         
-        elif element == "EOF":
-            message += r' "fin de archivo",'
         else:
             message += ' "'+element+'",'
     message = message[:-1]+'.'
