@@ -35,7 +35,6 @@ Rango -> rango opening_par RangoPar closing_par
 RangoPar -> Num T 
 T -> comma RangoPar | e
 
-
 Asignacion -> id D
 D -> Asignacion_Unica | Asignacion_Multiple | OperadorMod | Invocar_Funcion | Asignacion_index | Metodo
 Asignacion_index -> opening_bra Operacion_Arit closing_bra Asignacion_Unica
